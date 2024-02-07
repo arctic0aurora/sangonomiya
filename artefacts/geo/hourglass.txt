@@ -1,0 +1,55 @@
+troupe
+rcg = 51.8
+d = 16
+h = 209
+cr = 12.1
+cd = 19.4
+
+marechaussee
+D = 58.3
+rcg = 6.5
+cr = 5.8
+cd = 17.9
+em = 37
+
+goldentroupe
+D = 58.3
+rcg = 10.4
+A = 11.7
+cr = 9.7
+cd = 7.8
+
+husk
+D = 58.3
+rcg = 30.5
+cd = 14.0
+h = 209
+cr = 2.7
+
+oceanhue
+D = 58.3
+cr = 7.8
+cd = 19.4
+d = 16
+A = 15.7
+
+millelith
+D = 58.3
+cr = 9.3
+rcg = 5.8
+A = 5.8
+cd = 28.0
+
+gladiator
+D = 58.3
+d = 19
+cr = 12.8
+cd = 13.2
+H = 9.9
+
+gladiator
+D = 58.3
+cd = 20.2
+d = 37
+rcg = 13.0
+cr = 5.8

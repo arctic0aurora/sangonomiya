@@ -1,0 +1,76 @@
+blizzard
+h = 4780
+cr = 3.1
+cd = 28.8
+rcg = 10.4
+d = 42
+
+blizzard
+h = 4780
+rcg = 4.5
+cd = 21.0
+A = 4.7
+cr = 8.2
+
+blizzard
+h = 4780
+A = 5.8
+cd = 12.4
+cr = 16.7
+D = 5.1
+
+blizzard
+h = 4780
+cd = 17.9
+cr = 13.2
+d = 16
+D = 5.1
+
+blizzard
+h = 4780
+cr = 5.8
+D = 5.8
+cd = 18.7
+A = 10.5
+
+depth
+h = 4780
+cd = 35.8
+cr = 2.7
+d = 19
+em = 21
+
+depth
+h = 4780
+d = 21
+cr = 14.4
+cd = 13.2
+rcg = 5.2
+
+reminiscence
+h = 4780
+a = 16
+cr = 9.3
+d = 16
+cd = 28.0
+
+paradise
+h = 4780
+cd = 27.2
+a = 14
+cr = 6.2
+A = 5.3
+
+troupe
+h = 4780
+cd = 25.7
+rcg = 6.5
+cr = 6.6
+H = 5.8
+
+gladiator
+h = 4780
+cd = 36.5
+A = 4.1
+H = 11.1
+D = 5.1

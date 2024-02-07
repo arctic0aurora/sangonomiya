@@ -1,0 +1,111 @@
+blizzard
+cd = 62.2
+rcg = 15.5
+cr = 3.9
+D = 5.8
+A = 18.1
+
+blizzard
+cd = 62.2
+rcg = 6.5
+d = 42
+cr = 15.2
+D = 13.9
+
+blizzard
+cd = 62.2
+d = 16
+A = 10.5
+cr = 11.3
+h = 478
+
+blizzard
+cd = 62.2
+A = 4.1
+cr = 12.8
+a = 16
+d = 42
+
+blizzard
+cd = 62.2
+cr = 5.4
+em = 47
+h = 239
+A = 14.6
+
+blizzard
+A = 46.6
+cr = 6.6
+cd = 21
+a = 18
+rcg = 11.7
+
+blizzard
+A = 46.6
+em = 23
+cd = 25.7
+cr = 7.0
+a = 19
+
+viridescent
+cd = 62.2
+em = 16
+rcg = 6.5
+A = 9.9
+cd = 14.4
+
+pale
+cd = 62.2
+h = 299
+H = 5.8
+cr = 6.6
+A = 19.8
+
+pale
+cd = 62.2
+cr = 5.8
+rcg = 22.7
+H = 5.8
+em = 21
+
+oceanhue
+cd = 62.2
+H = 5.8
+D = 6.6
+cr = 11.3
+A = 15.7
+
+oceanhue
+cd = 62.2
+cr = 6.2
+a = 18
+A = 8.2
+rcg = 18.1
+
+millelith
+cd = 62.2
+cr = 9.7
+D = 7.3
+A = 15.7
+rcg = 5.2
+
+depth
+cr = 31.1
+rcg = 10.4
+cd = 28.7
+em = 23
+a = 27
+
+troupe
+cr = 31.1
+A = 11.1
+a = 18
+d = 32
+cr = 26.4
+
+paradise
+cr = 31.1
+a = 35
+rcg = 4.5
+cd = 29.5
+D = 7.3

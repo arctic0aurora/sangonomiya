@@ -1,0 +1,90 @@
+depth
+a = 311
+cd = 27.2
+h = 239
+cr = 7.0
+rcg = 11.0
+
+troupe
+a = 311
+H = -5.3
+cr = -10.9
+cd = -26.4
+A = -5.3
+
+gladiator
+a = 311
+cd = 20.2
+cr = 10.1
+a = 299
+rcg = 6.5
+
+reminiscence
+a = 311
+d = 42
+cr = 6.6
+cd = 25.6
+rcg = 4.5
+
+pale
+a = 311
+rcg = 30.5
+cr = 3.5
+cd = 14.0
+D = 6.6
+
+paradise
+a = 311
+cr = 14.4
+cd = 7.8
+D = 6.6
+em = 35
+
+goldentroupe
+a = 311
+cr = 3.1
+cd = 28.0
+d = 42
+H = 5.8
+
+goldentroupe
+a = 311
+H = 10.5
+cd = 25.7
+A = 11.1
+cr = 3.5
+
+goldentroupe
+a = 311
+cr = 13.6
+cd = 12.4
+a = 299
+em = 16
+
+goldentroupe
+a = 311
+cd = 20.2
+H = 4.1
+rcg = 11.7
+cr = 7.8
+
+marechaussee
+a = 311
+cd = 14
+rcg = 16.8
+A = 9.9
+cr = 3.5
+
+gladiator
+a = 311
+em = 19
+cd = 34.2
+D = 6.6
+h = 418
+
+husk
+a = 311
+d = 58
+cr = 6.2
+A = 8.7
+cd = 14.8

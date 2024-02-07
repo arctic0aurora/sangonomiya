@@ -1,0 +1,41 @@
+goldentroupe
+H = 46.6
+cd = 12.4
+em = 63
+cr = 7.0
+A = 4.1
+
+noblesse
+rcg = 51.8
+em = 23
+H = 16.3
+A = 8.2
+cd = 20.2
+
+troupe
+rcg = 51.8
+d = 16
+h = 209
+cr = 12.1
+cd = 19.4
+
+troupe
+rcg = 51.8
+cr = 11.7
+D = 10.9
+cd = 6.2
+H = 16.3
+
+reminiscence
+rcg = 51.8
+d = 16
+cd = 5.4
+cr = 13.6
+A = 8.7
+
+goldentroupe
+rcg = 51.8
+cr = 0
+cd = 0
+h = 0
+H = 0

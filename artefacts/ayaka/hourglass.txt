@@ -1,0 +1,85 @@
+blizzard
+A = 46.6
+rcg = 15.5
+D = 7.3
+cd = 20.2
+em = 16
+
+blizzard
+A = 46.6
+a = 37
+cr = 7.0
+h = 269
+cd = 17.1
+
+blizzard
+A = 46.6
+cd = 21.0
+cr = 6.2
+h = 209
+rcg = 11.0
+
+
+blizzard
+A = 46.6
+d = 39
+rcg = 12.3
+cd = 13.2
+cr = 7.0
+
+blizzard
+A = 46.6
+cd = 14.8
+em = 89
+cr = 7.8
+a = 19
+
+blizzard
+A = 46.6
+cd = 12.4
+D = 12.4
+cr = 9.7
+h = 508
+
+troupe
+A = 46.6
+cd = 24.1
+rcg = 12.3
+cr = 3.9
+a = 16
+
+vermillion
+A = 46.6
+cd = 27.2
+cr = 3.1
+D = 12.4
+d = 16
+
+oceanhue
+A = 46.6
+cr = 3.1
+cd = 15.5
+h = 478
+rcg = 18.1
+
+pale
+A = 46.6
+a = 16
+cr = 9.3
+cd = 15.5
+d = 35
+
+reminiscence
+A = 46.6
+cd = 14.8
+H = 4.1
+rcg = 10.4
+cr = 10.5
+
+marechaussee
+A = 46.6
+cr = 14.0
+cd = 13.2
+d = 42
+H = 5.3
+

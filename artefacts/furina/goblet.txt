@@ -1,0 +1,64 @@
+goldentroupe
+H = 46.6
+cr = 9.3
+cd = 17.9
+rcg = 11.0
+a = 16
+
+archaic
+H = 46.6
+h = 418
+cd = 25.7
+cr = 5.8
+d = 16
+
+blizzard
+H = 46.6
+rcg = 18.8
+cr = 3.5
+a = 478
+cd = 21.0
+
+troupe
+H = 46.6
+cd = 24.1
+rcg = 5.8
+cr = 11.3
+d = 23
+
+depth
+bns = 46.6
+cd = 21
+rcg = 5.8
+d = 42
+cr = 7.8
+
+blizzard
+bns = 46.6
+H = 5.8
+rcg = 16.8
+cd = 21.0
+h = 209
+
+pale
+bns = 46.6
+cr = 9.7
+a = 18
+A = 5.3
+cd = 20.2
+
+gladiator
+bns = 46.6
+cd = 19.4
+rcg = 5.2
+cr = 8.9
+em = 23
+
+pavilion
+bns = 46.6
+A = 8.7
+a = 18
+cd = 7.8
+cr = 16.3
+
+

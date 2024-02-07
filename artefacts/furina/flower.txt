@@ -1,0 +1,97 @@
+blizzard
+h = 4780
+cr = 3.1
+cd = 28.8
+rcg = 10.4
+d = 42
+
+blizzard
+h = 4780
+A = 5.8
+cd = 12.4
+cr = 16.7
+D = 5.1
+
+blizzard
+h = 4780
+cd = 17.9
+cr = 13.2
+d = 16
+D = 5.1
+
+depth
+h = 4780
+cd = 35.8
+cr = 2.7
+d = 19
+em = 21
+
+depth
+h = 4780
+d = 21
+cr = 14.4
+cd = 13.2
+rcg = 5.2
+
+reminiscence
+h = 4780
+a = 16
+cr = 9.3
+d = 16
+cd = 28.0
+
+paradise
+h = 4780
+cd = 27.2
+a = 14
+cr = 6.2
+A = 5.3
+
+troupe
+h = 4780
+cd = 25.7
+rcg = 6.5
+cr = 6.6
+H = 5.8
+
+gladiator
+h = 4780
+cd = 36.5
+A = 4.1
+H = 11.1
+D = 5.1
+
+goldentroupe
+h = 4780
+d = 21
+H = 19.2
+cd = 13.2
+a = 27
+
+goldentroupe
+h = 4780
+a = 19
+cd = 18.7
+d = 16
+H = 12.8
+
+goldentroupe
+h = 4780
+cd = 19.4
+H = 8.2
+em = 37
+cr = 3.1
+
+goldentroupe
+h = 4780
+D = 6.6
+cr = 11.3
+d = 39
+cd = 14.0
+
+goldentroupe
+h = 4780
+cr = 6.6
+D = 7.3
+em = 37
+cd = 21.0

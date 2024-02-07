@@ -1,0 +1,97 @@
+blizzard
+h = 4780
+A = 5.8
+cd = 12.4
+cr = 16.7
+D = 5.1
+
+blizzard
+h = 4780
+cd = 17.9
+cr = 13.2
+d = 16
+D = 5.1
+
+depth
+h = 4780
+cd = 35.8
+cr = 2.7
+d = 19
+em = 21
+
+depth
+h = 4780
+d = 21
+cr = 14.4
+cd = 13.2
+rcg = 5.2
+
+reminiscence
+h = 4780
+a = 16
+cr = 9.3
+d = 16
+cd = 28.0
+
+troupe
+h = 4780
+cd = 25.7
+rcg = 6.5
+cr = 6.6
+H = 5.8
+
+gladiator
+h = 4780
+cd = 36.5
+A = 4.1
+H = 11.1
+D = 5.1
+
+goldentroupe
+h = 4780
+D = 6.6
+cr = 11.3
+d = 39
+cd = 14.0
+
+goldentroupe
+h = 4780
+cr = 6.6
+D = 7.3
+em = 37
+cd = 21.0
+
+marechaussee
+h = 4780
+D = 13.1
+A = 5.8
+cr = 7.4
+cd = 21.8
+
+marechaussee
+h = 4780
+D = 20.4
+cr = 3.1
+cd = 18.7
+em = 40
+
+marechaussee
+h = 4780
+rcg = 20.7
+cd = 7.8
+cr = 7.4
+H = 4.1
+
+husk
+h = 4780
+rcg = 9.1
+D = 14.6
+em = 42
+cd = 21.0
+
+husk
+h = 4780
+a = 37
+cd = 12.4
+D = 13.9
+cr = 7.8
