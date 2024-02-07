@@ -105,10 +105,9 @@ class Ayaka(CharacterBase):
         # skill level 10/13/13
         soumetsu_cut_mult, soumetsu_bloom_mult = 239, 358
         hyouka_mult = 508
-        a1_mult = 90.4
         charged_mult = 109
 
-        suigetsu_bonus = 298
+        suigetsu_bonus = 298 # ayaka c6
 
         conditioned_cr = {
             'no': self.no_cryo_cr,
