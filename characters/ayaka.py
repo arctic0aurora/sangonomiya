@@ -97,7 +97,7 @@ class Ayaka(CharacterBase):
     
     
     def optim_target(self, team=['kazuha', 'kokomi', 'shenhe'], args=['recharge_thres']):
-        # return Soumetsu full damage, single cut, single cut with quill, alone
+        # returns soumetsu and c6 charged damage, full soumetsu with 10 quills as feature
 
         if 'recharge_thres' in args and self.rcg() < 137:
             return Composite(), {}

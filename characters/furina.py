@@ -8,101 +8,100 @@ import numpy as np
 
 class Furina(CharacterBase):
     def __init__(self, weapon='jade', fanfare_weight=0.5, duckweed_weight=0.33):
-        super().__init__()
         self.name = 'Furina'
-        self.attrs = {
-            'hp0': np.array([15307]), # hitpoint
-            'atk0': np.array([244]), # attack
-            'df0': np.array([696]), # defence
-            'spd0': np.array([100]), # speed
-            'cr': np.array([24.2]), # crit rate
-            'cd': np.array([50]), # crit damage
-            'rcg': np.array([100]), # recharge
-            'bns': np.array([0]), # damage bonus
-            'em': np.array([0]), # elemental mastery
-            'res': np.array([10]), # resistance (reduction)
-            'rdf': np.array([0]), # defence (reduction)
-            'H': np.array([0]), # hp percentage
-            'h': np.array([0]), # hp increment
-            'A': np.array([0]), # atk percentage
-            'a': np.array([0]), # atk increment
-            'D': np.array([0]), # def percentage
-            'd': np.array([0]), # def increment
-            'S': np.array([0]), # spd percentage
-            's': np.array([0]), # spd increment
-        }
-        self.prune_cond = {
-            'thres': 0,
-            'set_restriction': {'goldentroupe':4}
-        }
+        self.weapon = weapon
         self.qweight = fanfare_weight
         self.c2weight = duckweed_weight
-        self.weapon = weapon      
+        furina_base = {
+            'hp0': 15307,
+            'atk0': 244,
+            'df0': 696,
+            'cr': 24.2,
+            'cd': 50,
+            'rcg': 100,
+            'em': 0,
+        }
+        self.attrs = self.construct_attrs(furina_base)
+        self.prune_cond = {
+            'thres': 0,
+            'set_restriction': {'goldentroupe': 4}
+        }
+        self.artifacts = ArtifactCollection([])
         self.apply_weapon()
-        self.apply_resonation()
         # self.apply_team()
-    
-    def apply_weapon(self):
-        if self.weapon == 'yuraku':
-            self.apply_yuraku()
-        elif self.weapon == 'jade':
-            self.apply_primodial_jade()
 
+    # furina talent2
     def confession_bns(self, duckweed_hp=0):
         return min(28, (self.hp()+duckweed_hp)*0.7/1000)
+    
+    def apply_weapon(self):
+        if self.weapon == 'tranquil':
+            self.apply_tranquil()
+        elif self.weapon == 'misugiri':
+            self.apply_misugiri()
+        elif self.weapon == 'jade':
+            self.apply_primodial_jade()
+    
+    def apply_tranquil(self):
+        self.apply_modifier('atk0', 542)
+        self.apply_modifier('cd', 88.2)
+        self.apply_modifier('H', 28)
+        self.apply_modifier('skill', 24)
+
+    def apply_misugiri(self, geo=False):
+        self.apply_modifier('atk0', 542)
+        self.apply_modifier('cd', 88.2)
+        self.apply_modifier('normal', 16)
+        self.apply_modifier('skill', 24)
+        self.apply_modifier('D', 20)
+        if geo:
+            self.apply_modifier('skill', 24)
 
     def apply_primodial_jade(self):
-        self.attrs['atk0'] = np.append(self.attrs['atk0'], 542)
-        self.attrs['cr'] = np.append(self.attrs['cr'], 44.1)
-        self.attrs['H'] = np.append(self.attrs['H'], 20)
-
-    def apply_yuraku(self):
-        self.attrs['atk0'] = np.append(self.attrs['atk0'], 542)
-        self.attrs['cd'] = np.append(self.attrs['cd'], 88.2)
-        self.attrs['bns'] = np.append(self.attrs['bns'], 24)
+        self.apply_modifier('atk0', 542)
+        self.apply_modifier('cr', 44.1)
+        self.apply_modifier('H', 20)
 
     def apply_artifacts(self, artifacts):
         super().apply_artifacts(artifacts)
-        if 'goldentroupe' in self.artifacts.set_counts and self.artifacts.set_counts['goldentroupe'] >= 2:
-            self.attrs['bns'] = np.append(self.attrs['bns'], 25)
-        if 'goldentroupe' in self.artifacts.set_counts and self.artifacts.set_counts['goldentroupe'] >= 4:
-            self.attrs['bns'] = np.append(self.attrs['bns'], 50)
-        if 'depth' in self.artifacts.set_counts and self.artifacts.set_counts['depth'] >= 2:
-            self.attrs['bns'] = np.append(self.attrs['bns'], 15)
-        if 'millelith' in self.artifacts.set_counts and self.artifacts.set_counts['millelith'] >= 2:
-            self.attrs['H'] = np.append(self.attrs['H'], 20)
-        if 'vourukasha' in self.artifacts.set_counts and self.artifacts.set_counts['vourukasha'] >= 2:
-            self.attrs['H'] = np.append(self.attrs['H'], 20)
-        if 'echoes' in self.artifacts.set_counts and self.artifacts.set_counts['echoes'] >= 2:
-            self.attrs['A'] = np.append(self.attrs['A'], 18)
-        if 'troupe' in self.artifacts.set_counts and self.artifacts.set_counts['troupe'] >= 2:
-            self.attrs['em'] = np.append(self.attrs['em'], 80)
-        if 'emblem' in self.artifacts.set_counts and self.artifacts.set_counts['emblem'] >= 2:
-            self.attrs['rcg'] = np.append(self.attrs['rcg'], 20)
+        if self.artifacts.contains('goldentroupe', 2):
+            self.apply_modifier('skill', 25)
+        if self.artifacts.contains('goldentroupe', 4):
+            self.apply_modifier('skill', 50)
+        if self.artifacts.contains('emblem', 2):
+            self.apply_modifier('rcg', 20)
+        self.apply_h20_artifacts()
+        for artifact_set in ['depth', 'nymph']:
+            if self.artifacts.contains(artifact_set, 2):
+                self.apply_modifier('hydro', 15)
 
-    def apply_resonation(self):
-        self.attrs['H'] = np.append(self.attrs['H'], 25) # hydro resonation
+    def apply_hydro_resonation(self):
+        self.apply_modifier('H', 25)
     
     def reset_team(self):
         super().reset_stats()
         self.apply_weapon()
         self.apply_artifacts(self.artifacts)
-        self.apply_resonation()
 
     def apply_team(self, team=[]):
+        if 'kokomi' in team or 'yelan' in team or 'xingqiu' in team:
+            self.apply_hydro_resonation()
         if 'kazuha' in team:
-            self.attrs['A'] = np.append(self.attrs['A'], 20) # freedom-sworn            
-            self.attrs['res'] = np.append(self.attrs['res'], -40) # viridescent4
-            self.attrs['bns'] = np.append(self.attrs['bns'], 42) # talent
-        if 'jean' in team:
-            self.attrs['A'] = np.append(self.attrs['A'], 20) # freedom-sworn 
-            self.attrs['res'] = np.append(self.attrs['res'], -40) # viridescent4
+            self.apply_modifier('A', 20) # freedom-sworn            
+            self.apply_modifier('res', -40) # viridescent4
+            self.apply_modifier('cryo', 42) # talent
+        if 'lynette' in team or 'jean' in team:          
+            self.apply_modifier('res', -40) # viridescent4
         if 'yelan' in team:
-            self.attrs['bns'] = np.append(self.attrs['bns'], 28) # talent
+            # self.apply_modifier('bns', 28) # talent
+            self.apply_modifier('bns', 0) # no buff for off-field
         if 'xingqiu' in team:
-            self.attrs['res'] = np.append(self.attrs['res'], -15) # talent
-    
-    def optim_target(self, team=['kazuha', 'kokomi', 'xingqiu'], args=['recharge_thres']):
+            self.apply_modifier('res', -15) # c2
+
+
+    def optim_target(self, team=['kazuha', 'kokomi', 'yelan'], args=['recharge_thres']):
+        # rotation e summon damage as feature
+
         if 'recharge_thres' in args and self.rcg() < 155:
             return Composite(), {}
 
