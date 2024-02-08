@@ -28,10 +28,19 @@ class Ayaka(CharacterBase):
             'cr-frozen': 0, # additional crit rate when frozen
         }
         self.attrs = self.construct_attrs(ayaka_base)
-        self.prune_cond = {
-            'thres': 0,
-            'set_restriction': {'blizzard': 4}
+        self.mult = {
+            'soumetsu-cut': 239,
+            'soumetsu-bloom': 358,
+            'hyouka': 508,
+            'a1': 90.4,
+            'charged': 109,
+        } # skill lvl 10/13/13
+        self.suigetsu_bonus = 298 # ayaka c6
+        self.requirement = {
+            'set-type': '4pcs',
+            'set-restriction': ['blizzard'],
         }
+        self.recharge_thres = 137 # tested with favonius shenhe
         self.quill = 0
         self.artifacts = ArtifactCollection([])
         self.apply_weapon()
@@ -97,17 +106,10 @@ class Ayaka(CharacterBase):
     
     
     def optim_target(self, team=['kazuha', 'kokomi', 'shenhe'], args=['recharge_thres']):
-        # returns soumetsu and c6 charged damage, full soumetsu with 10 quills as feature
+        # returns full soumetsu with 10 quills as feature
 
-        if 'recharge_thres' in args and self.rcg() < 137:
+        if 'recharge_thres' in args and self.rcg() < self.recharge_thres:
             return Composite(), {}
-
-        # skill level 10/13/13
-        soumetsu_cut_mult, soumetsu_bloom_mult = 239, 358
-        hyouka_mult = 508
-        charged_mult = 109
-
-        suigetsu_bonus = 298 # ayaka c6
 
         conditioned_cr = {
             'no': self.no_cryo_cr,
@@ -115,59 +117,16 @@ class Ayaka(CharacterBase):
             'frozen': self.frozen_cr,
         }
 
-        # alone benchmark
-        soumetsu_cut_alone = {}
-        for cond in conditioned_cr:
-            soumetsu_cut_alone[cond] = calc_damage(
-                soumetsu_cut_mult,
-                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','burst']),
-                self.res(), self.rdf()
-            )
-        c6_charged_alone = {}
-        for cond in conditioned_cr:
-            c6_charged_alone[cond] = calc_damage(
-                charged_mult,
-                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','charged'])+suigetsu_bonus,
-                self.res(), self.rdf()
-            )
-
-        # apply team buffs
         self.apply_team(team)
 
         # soumetsu
-        soumetsu_cut, soumetsu_cut_quill, soumetsu_full = {}, {}, {}
+        soumetsu_full = {}
         for cond in conditioned_cr:
-            soumetsu_cut[cond] = calc_damage(
-                soumetsu_cut_mult,
-                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','burst']),
-                self.res(), self.rdf()
-            )
-            soumetsu_cut_quill[cond] = calc_damage(
-                soumetsu_cut_mult,
-                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','burst']),
-                self.res(), self.rdf(),
-                quill = self.quill
-            )
             soumetsu_full[cond] = calc_damage(
-                1.4*(19*soumetsu_cut_mult+soumetsu_bloom_mult), # with c2 mini seki-no-tos
+                1.4*(19*self.mult['soumetsu-cut']+self.mult['soumetsu-bloom']), # with c2 mini seki-no-tos
                 self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','burst']),
                 self.res(), self.rdf(),
                 quill = 10*self.quill
-            )
-
-        # c6 charged
-        c6_charged, c6_charged_quill = {}, {}
-        for cond in conditioned_cr:
-            c6_charged[cond] = calc_damage(
-                charged_mult,
-                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','charged'])+suigetsu_bonus,
-                self.res(), self.rdf()
-            )
-            c6_charged_quill[cond] = calc_damage(
-                charged_mult,
-                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','charged'])+suigetsu_bonus,
-                self.res(), self.rdf(),
-                quill = self.quill
             )
 
         feature = soumetsu_full['frozen']*self.frozen_weight + soumetsu_full['cryo']*(self.cryo_weight-self.frozen_weight) + soumetsu_full['no']*(1-self.cryo_weight)
@@ -176,6 +135,73 @@ class Ayaka(CharacterBase):
 
         return feature, {
             'soumetsu full': soumetsu_full['frozen'], 
+            }
+
+
+    def additional_feature(self, team=['kazuha', 'kokomi', 'shenhe'], args=['recharge_thres']):
+        # returns soumetsu and c6 charged damage
+
+        if 'recharge_thres' in args and self.rcg() < self.recharge_thres:
+            return Composite(), {}
+        
+        conditioned_cr = {
+            'no': self.no_cryo_cr,
+            'cryo': self.cryo_cr,
+            'frozen': self.frozen_cr,
+        }
+
+        # alone without team buffs
+        soumetsu_cut_alone = {}
+        for cond in conditioned_cr:
+            soumetsu_cut_alone[cond] = calc_damage(
+                self.mult['soumetsu-cut'],
+                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','burst']),
+                self.res(), self.rdf()
+            )
+        c6_charged_alone = {}
+        for cond in conditioned_cr:
+            c6_charged_alone[cond] = calc_damage(
+                self.mult['charged'],
+                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','charged'])+self.suigetsu_bonus,
+                self.res(), self.rdf()
+            )
+
+        # apply team buffs
+        self.apply_team(team)
+
+        # soumetsu
+        soumetsu_cut, soumetsu_cut_quill = {}, {}
+        for cond in conditioned_cr:
+            soumetsu_cut[cond] = calc_damage(
+                self.mult['soumetsu-cut'],
+                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','burst']),
+                self.res(), self.rdf()
+            )
+            soumetsu_cut_quill[cond] = calc_damage(
+                self.mult['soumetsu-cut'],
+                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','burst']),
+                self.res(), self.rdf(),
+                quill = self.quill
+            )
+
+        # c6 charged
+        c6_charged, c6_charged_quill = {}, {}
+        for cond in conditioned_cr:
+            c6_charged[cond] = calc_damage(
+                self.mult['charged'],
+                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','charged'])+self.suigetsu_bonus,
+                self.res(), self.rdf()
+            )
+            c6_charged_quill[cond] = calc_damage(
+                self.mult['charged'],
+                self.atk(), self.cr()+conditioned_cr[cond](), self.cd(), self.bns(['cryo','charged'])+self.suigetsu_bonus,
+                self.res(), self.rdf(),
+                quill = self.quill
+            )
+
+        self.reset_team()
+
+        return {
             'soumetsu quill': soumetsu_cut_quill['frozen'], 
             'soumetsu cut': soumetsu_cut['frozen'],
             'soumetsu alone': soumetsu_cut_alone['cryo'],
@@ -183,7 +209,6 @@ class Ayaka(CharacterBase):
             'c6 charged': c6_charged['frozen'],
             'c6 charged alone': c6_charged_alone['cryo'],
             }
-
     
     
 

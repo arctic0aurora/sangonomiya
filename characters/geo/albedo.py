@@ -33,7 +33,7 @@ class Albedo(CharacterBase):
             'geo': np.array([28.8]), # geo damage bonus [chiori talent2]
             'skill': np.array([0]), # skill damage bonus
         }
-        self.prune_cond = {
+        self.requirement = {
             'thres': 0,
             'set_restriction': {'goldentroupe':4},
             'alternative': {'husk':4}

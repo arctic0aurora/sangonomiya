@@ -33,7 +33,7 @@ class Noelle(CharacterBase):
             'geo': np.array([0]), # geo damage bonus
             'norm': np.array([0]), # normal/charged damage bonus
         }
-        self.prune_cond = {
+        self.requirement = {
             'thres': 0,
             'set_restriction': {'marechaussee':4},
             'alternative': {'husk':4}

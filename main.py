@@ -20,31 +20,31 @@ def main(args):
         ayaka = characters.ayaka.Ayaka(weapon='mistsplitter', cryo_weight=1, frozen_weight=0.5)
         ayaka_path = './artefacts/ayaka'
         optim = Optimizer(ayaka, ayaka_path, team=['kazuha', 'kokomi', 'shenhe'], args=['recharge_thres'])
-        optim.optimize_artifacts(prune_cond=ayaka.prune_cond)
+        optim.optimize_artifacts(requirement=ayaka.requirement)
         optim.print_options()
     elif character == 'furina':
         furina = characters.furina.Furina(weapon='jade', fanfare_weight=0.5, duckweed_weight=0.33)
         furina_path = './artefacts/furina'
         optim = Optimizer(furina, furina_path, team=['kazuha', 'kokomi', 'xingqiu'], args=['recharge_thres'])
-        optim.optimize_artifacts(prune_cond=furina.prune_cond)
+        optim.optimize_artifacts(requirement=furina.requirement)
         optim.print_options()
     elif character == 'albedo':
         albedo = characters.geo.albedo.Albedo(weapon='spindle')
         albedo_path = './artefacts/geo'
         optim = Optimizer(albedo, albedo_path, team=['noelle', 'chiori', 'furina'], args=['recharge_thres'])
-        optim.optimize_artifacts(prune_cond=albedo.prune_cond)
+        optim.optimize_artifacts(requirement=albedo.requirement)
         optim.print_options()
     elif character == 'noelle':
         noelle = characters.geo.noelle.Noelle(weapon='skyward')
         noelle_path = './artefacts/geo'
         optim = Optimizer(noelle, noelle_path, team=['albedo', 'chiori', 'furina'], args=['recharge_thres'])
-        optim.optimize_artifacts(prune_cond=noelle.prune_cond)
+        optim.optimize_artifacts(requirement=noelle.requirement)
         optim.print_options()
     elif character == 'chiori':
         chiori = characters.geo.chiori.Chiori(weapon='yuraku')
         chiori_path = './artefacts/geo'
         optim = Optimizer(chiori, chiori_path, team=['albedo', 'gorou', 'zhongli'], args=['recharge_thres'])
-        optim.optimize_artifacts(prune_cond=chiori.prune_cond)
+        optim.optimize_artifacts(requirement=chiori.requirement)
         optim.print_options()
 
 

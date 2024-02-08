@@ -18,37 +18,6 @@ class Artifact():
                 print('{}: {:.1f}'.format(attribute_names[key], value))
 
 
-def prune_check(artifact_list, prune_condition, full_slots=5):
-    prune_cond = copy.deepcopy(prune_condition)
-    if not 'set_restriction' in prune_cond:
-        return False
-    
-    set_restriction = prune_cond['set_restriction']
-    remain_slots = full_slots - len(artifact_list)
-    for artifact in artifact_list:
-        if artifact.set in set_restriction and set_restriction[artifact.set]>=1:
-            set_restriction[artifact.set] -= 1
-    remain_reqs = 0
-    for st in set_restriction:
-        remain_reqs += set_restriction[st]
-        if remain_reqs > remain_slots:
-            if 'alternative' in prune_cond:
-                set_restriction = prune_cond['alternative']
-                remain_slots = full_slots - len(artifact_list)
-                for artifact in artifact_list:
-                    if artifact.set in set_restriction and set_restriction[artifact.set]>=1:
-                        set_restriction[artifact.set] -= 1
-                remain_reqs = 0
-                for st in set_restriction:
-                    remain_reqs += set_restriction[st]
-                    if remain_reqs > remain_slots:
-                        return True
-            else:
-                return True
-
-    return False
-
-
 class ArtifactCollection():
     def __init__(self, artifact_list):
         self.alist = artifact_list

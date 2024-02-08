@@ -119,8 +119,11 @@ class CharacterBase():
         return CharacterPanel(self.name, panel_stats)
     
     # calculations
-    def optim_target(self):
+    def optim_target(self, team, args):
         return Composite(), {}
+    
+    def additional_feature(self, team, args):
+        return {}
     
     # misc helper functions
     def apply_a18_artifacts(self):

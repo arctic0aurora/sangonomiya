@@ -44,9 +44,4 @@ atk_mask = ['A', 'a', 'cr', 'cd', 'bns']
 def default_sort_key(result):
     return result.feature.exp
 
-# cut branch condition
-prune_condition_default = {
-    'thres': 0,
-    'set_restriction': {'troupe':0, 'noblesse':0}
-}
 

@@ -22,7 +22,7 @@ class Furina(CharacterBase):
             'em': 0,
         }
         self.attrs = self.construct_attrs(furina_base)
-        self.prune_cond = {
+        self.requirement = {
             'thres': 0,
             'set_restriction': {'goldentroupe': 4}
         }
@@ -101,8 +101,9 @@ class Furina(CharacterBase):
 
     def optim_target(self, team=['kazuha', 'kokomi', 'yelan'], args=['recharge_thres']):
         # rotation e summon damage as feature
+        # assumption: fanfare is counted after summons attack, healing is instant to regenerate lost hp
 
-        if 'recharge_thres' in args and self.rcg() < 155:
+        if 'recharge_thres' in args and self.rcg() < 150:
             return Composite(), {}
 
         ousia_bubble = 14.2
