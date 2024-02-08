@@ -19,7 +19,7 @@ def fanfare_simulation(print_sequence=True):
 
     scd, mcd, lcd, gcd = 0, 0, 0, 0 # cd counters
     sequence = []
-    fanfare = 0
+    fanfare = 100
     for i in range(0, 1800):
         # small
         if scd < 1 and gcd < 1:
@@ -52,8 +52,8 @@ def fanfare_simulation(print_sequence=True):
         gcd = gcd - 1
 
     # simulation result
-    # small 15 (0-400:4, 400-800:4, 800-1500:7)
-    # medium 7 (2, 2, 3)
+    # small 15 (0-400:3, 400-800:4, 800-1600:8)
+    # medium 7 (1, 2, 4)
     # large 4 (1, 1, 2)
     if print_sequence:
         print('fanfare axis in 1800 frames (18.0s)')
@@ -72,11 +72,11 @@ class Furina(CharacterBase):
 
     fanfare_sequence = fanfare_simulation()
 
-    def __init__(self, weapon='jade', fanfare_weight=0.5, duckweed_weight=0.33):
+    def __init__(self, weapon='jade', rejoice_weight=0.8, duckweed_weight=0.5):
         self.name = 'Furina'
         self.weapon = weapon
-        self.qweight = fanfare_weight
-        self.c2weight = duckweed_weight
+        self.rejoice_weight = rejoice_weight
+        self.duckweed_weight = duckweed_weight
         furina_base = {
             'hp0': 15307,
             'atk0': 244,
@@ -106,15 +106,20 @@ class Furina(CharacterBase):
         # self.apply_team()
 
     # furina talent2
-    def confession_bonus(self, duckweed_hp=0):
-        return min(28, (self.hp()+duckweed_hp)*0.7/1000)
+    def confession_bonus(self, fanfare=0):
+        if fanfare <= 400:
+            return min(28, (self.hp()) * 0.7/1000)
+        return min(28, (self.hp()+self.fanfare_hp(fanfare)) * 0.7/1000)
     
     # fanfare to buff
     def fanfare_bonus(self, fanfare):
         return 0.25 * min(fanfare, 400)
     
-    def fanfare_hp(self, fanfare):
+    def fanfare_hp_percent(self, fanfare):
         return max(0, 0.35 * (min(fanfare, 800) - 400))
+    
+    def fanfare_hp(self, fanfare):
+        return 0.01 * self.fanfare_hp_percent(fanfare) * self.attrs['hp0'][0]
     
     def apply_weapon(self):
         if self.weapon == 'tranquil':
@@ -146,7 +151,7 @@ class Furina(CharacterBase):
         self.apply_modifier('cr', 44.1)
         self.apply_modifier('H', 20)
 
-    def apply_primodial_jade(self):
+    def apply_favonius(self):
         self.apply_modifier('atk0', 454)
         self.apply_modifier('rcg', 61.3)
 
@@ -177,7 +182,7 @@ class Furina(CharacterBase):
         if 'kazuha' in team:
             self.apply_modifier('A', 20) # freedom-sworn            
             self.apply_modifier('res', -40) # viridescent4
-            self.apply_modifier('cryo', 42) # talent
+            self.apply_modifier('hydro', 42) # talent
         if 'lynette' in team or 'jean' in team:          
             self.apply_modifier('res', -40) # viridescent4
         if 'yelan' in team:
@@ -188,73 +193,103 @@ class Furina(CharacterBase):
 
 
     def optim_target(self, team=['kazuha', 'kokomi', 'yelan'], args=['recharge_thres']):
-        # rotation e summon damage as feature  
+        # returns mademoiselle crabaletta damage as feature
 
         if 'recharge_thres' in args and self.rcg() < self.recharge_thres:
             return Composite(), {}
+        
+        self.apply_team(team)
+        
+        # mademoiselle crabaletta
+        large_initial = calc_damage(
+                self.mult['large'],
+                self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+                self.res()
+            )
+        
+        large_rejoice = calc_damage(
+                self.mult['large'],
+                self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
+                self.res()
+            )
+        
+        large_duckweed = calc_damage(
+                self.mult['large'],
+                self.hp()+self.fanfare_hp(800), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
+                self.res()
+            )
+        
+        feature = large_duckweed*self.duckweed_weight + large_rejoice*(self.rejoice_weight-self.duckweed_weight) + large_initial*(1-self.rejoice_weight)
+        
+        self.reset_team()
 
-        ousia_bubble = 14.2
-        gentilhomme_usher = 10.73
-        surintendante_chevalmarin = 5.82
-        mademoiselle_crabaletta = 14.92
+        return feature, {}
+    
 
-        fanfare_bns = 400 * 0.25
-        duckweed_hp = 1.40
+    def additional_feature(self, team=['kazuha', 'kokomi', 'yelan'], args=['recharge_thres']):
+        # returns rotation damage q+e 18s
 
         self.apply_team(team)
 
-        # bubble has no fanfare bonus
-        bubble = calc_damage(ousia_bubble,
-            self.hp(), self.cr(), self.cd(), self.bns(),
-            self.res())
+        # elemental burst
+        rejoice = calc_damage(
+                self.mult['rejoice'],
+                self.hp(), self.cr(), self.cd(), self.bns(['hydro','burst'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+                self.res()
+            )
         
-        # without fanfare
-        small_initial = calc_damage(surintendante_chevalmarin,
-            self.hp(), self.cr(), self.cd(), self.bns()+self.confession_bns(),
-            self.res())
-        medium_initial = calc_damage(gentilhomme_usher,
-            self.hp(), self.cr(), self.cd(), self.bns()+self.confession_bns(),
-            self.res())
-        large_initial = calc_damage(mademoiselle_crabaletta,
-            self.hp(), self.cr(), self.cd(), self.bns()+self.confession_bns(),
-            self.res())
+        # elemental skill release
+        bubble = calc_damage(
+                self.mult['solitaire-bubble'],
+                self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+                self.res()
+            )
         
-        # full fanfare
-        small_full = calc_damage(surintendante_chevalmarin,
-            self.hp(), self.cr(), self.cd(), self.bns()+fanfare_bns+self.confession_bns(),
-            self.res())
-        medium_full = calc_damage(gentilhomme_usher,
-            self.hp(), self.cr(), self.cd(), self.bns()+fanfare_bns+self.confession_bns(),
-            self.res())
-        large_full = calc_damage(mademoiselle_crabaletta,
-            self.hp(), self.cr(), self.cd(), self.bns()+fanfare_bns+self.confession_bns(),
-            self.res())
+        # calculate 3 summons with unit damage
+        unit_initial = calc_damage(
+                1,
+                self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+                self.res()
+            )
         
-        # with duckweed bonus
-        small_c2full = calc_damage(surintendante_chevalmarin,
-            self.hp()+duckweed_hp*self.attrs['hp0'][0], self.cr(), self.cd(), self.bns()+fanfare_bns+self.confession_bns(duckweed_hp*self.attrs['hp0'][0]),
-            self.res())
-        medium_c2full = calc_damage(gentilhomme_usher,
-            self.hp()+duckweed_hp*self.attrs['hp0'][0], self.cr(), self.cd(), self.bns()+fanfare_bns+self.confession_bns(duckweed_hp*self.attrs['hp0'][0]),
-            self.res())
-        large_c2full = calc_damage(mademoiselle_crabaletta,
-            self.hp()+duckweed_hp*self.attrs['hp0'][0], self.cr(), self.cd(), self.bns()+fanfare_bns+self.confession_bns(duckweed_hp*self.attrs['hp0'][0]),
-            self.res())
+        unit_rejoice = calc_damage(
+                1,
+                self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
+                self.res()
+            )
         
-        feature = (small_initial*(1-self.qweight-self.c2weight) + small_full*self.qweight + small_c2full*self.c2weight)*12
-        feature = feature + (medium_initial*(1-self.qweight-self.c2weight) + medium_full*self.qweight + medium_c2full*self.c2weight)*6
-        feature = feature + (large_initial*(1-self.qweight-self.c2weight) + large_full*self.qweight + large_c2full*self.c2weight)*6
+        unit_duckweed = calc_damage(
+                1,
+                self.hp()+self.fanfare_hp(800), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
+                self.res()
+            )
 
+        salon_cumulative = Composite()
+        for action in Furina.fanfare_sequence:
+            action_result = calc_damage(
+                self.mult[action['type']],
+                self.hp()+self.fanfare_hp(action['fanfare']), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(action['fanfare'])+self.confession_bonus(action['fanfare']),
+                self.res()
+            )
+            salon_cumulative = salon_cumulative + action_result
+        
         self.reset_team()
 
-        return feature, {'ousia bubble': bubble,
-                         'surintendante_chevalmarin(fanfare)': small_full, 
-                         'gentilhomme_usher(fanfare)': medium_full, 
-                         'mademoiselle_crabaletta(fanfare)': large_full,
-                         'surintendante_chevalmarin(duckweed)': small_c2full, 
-                         'gentilhomme_usher(duckweed)': medium_c2full, 
-                         'mademoiselle_crabaletta(duckweed)': large_c2full}
-
+        return {
+            'rotation total': rejoice+bubble+salon_cumulative,
+            'salon solitaire total': salon_cumulative,
+            'rejoice': rejoice,
+            'ousia bubble': bubble,
+            'surintendante chevalmarin(initial)': unit_initial*self.mult['small'],
+            'surintendante chevalmarin(rejoice)': unit_rejoice*self.mult['small'],
+            'surintendante chevalmarin(duckweed)': unit_duckweed*self.mult['small'],
+            'gentilhomme usher(initial)': unit_initial*self.mult['medium'],
+            'gentilhomme usher(rejoice)': unit_rejoice*self.mult['medium'],
+            'gentilhomme usher(duckweed)': unit_duckweed*self.mult['medium'],
+            'mademoiselle crabaletta(initial)': unit_initial*self.mult['large'],
+            'mademoiselle crabaletta(rejoice)': unit_rejoice*self.mult['large'],
+            'mademoiselle crabaletta(duckweed)': unit_duckweed*self.mult['large'],
+            }
 
 
 
