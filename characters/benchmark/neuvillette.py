@@ -7,165 +7,83 @@ from optim import *
 import numpy as np
 
 
-# generate fanfare/duckweed axis in a rotation
-def fanfare_simulation(print_sequence=True):
-    # assumption: fanfare is counted after summons attack, healing is instant to regenerate lost hp
-    # (so that each time a summon consumes hp, fanfare is added twice)
-
-    small_hp, medium_hp, large_hp = 1.6, 2.4, 3.6
-    # 119 frame = 1.19s
-    small_cd, medium_cd, large_cd = 119, 290, 480
-    global_cd = 50 # applied only to small
-
-    scd, mcd, lcd, gcd = 0, 0, 0, 0 # cd counters
-    sequence = []
-    fanfare = 100
-    for i in range(0, 1800):
-        # small
-        if scd < 1 and gcd < 1:
-            sequence.append({
-                'type': 'small',
-                'timer': i,
-                'fanfare': fanfare,
-            })
-            fanfare += small_hp * 4 * 3.5 * 2
-            scd, gcd = small_cd, global_cd
-        if mcd < 1:
-            sequence.append({
-                'type': 'medium',
-                'timer': i,
-                'fanfare': fanfare,
-            })
-            fanfare += medium_hp * 4 * 3.5 * 2
-            mcd, gcd = medium_cd, global_cd
-        if lcd < 1:
-            sequence.append({
-                'type': 'large',
-                'timer': i,
-                'fanfare': fanfare,
-            })
-            fanfare += large_hp * 4 * 3.5 * 2
-            lcd, gcd = large_cd, global_cd
-        scd = scd - 1
-        mcd = mcd - 1
-        lcd = lcd - 1
-        gcd = gcd - 1
-
-    # simulation result
-    # small 15 (0-400:3, 400-800:4, 800-1600:8)
-    # medium 7 (1, 2, 4)
-    # large 4 (1, 1, 2)
-    if print_sequence:
-        print('fanfare axis in 1800 frames (18.0s)')
-        cnts = {'small':0, 'medium':0, 'large':0}
-        for action in sequence:
-            cnts[action['type']] += 1
-            print('{}: {}, fanfare={:.1f}'.format(action['timer'], action['type'], action['fanfare']))
-        print('action summary')
-        for typ in cnts:
-            print('{}: {} times'.format(typ, cnts[typ]))
-        print('')
-    return sequence
-
-
-class Furina(CharacterBase):
-
-    fanfare_sequence = []
-
-    def __init__(self, weapon='jade', rejoice_weight=0.8, duckweed_weight=0.5):
-        self.name = 'Furina'
+class Neuvillette(CharacterBase):
+    def __init__(self, weapon='eternalflow'):
+        self.name = 'Neuvillette'
         self.weapon = weapon
-        self.rejoice_weight = rejoice_weight
-        self.duckweed_weight = duckweed_weight
-        furina_base = {
-            'hp0': 15307,
-            'atk0': 244,
-            'df0': 696,
-            'cr': 24.2,
-            'cd': 50,
+        neuvillette_base = {
+            'hp0': 14695,
+            'atk0': 208,
+            'df0': 576,
+            'cr': 5,
+            'cd': 88.4,
             'rcg': 100,
             'em': 0,
+            'hydro': 30 # talent2
         }
-        self.attrs = self.construct_attrs(furina_base)
+        self.attrs = self.construct_attrs(neuvillette_base)
         self.mult = {
-            'solitaire-bubble': 14.2, # ousia e release
-            'small': 5.82, # surintendante chevalmarin
-            'medium': 10.73, # gentilhomme usher
-            'large': 14.92, # mademoiselle crabaletta
-            'rejoice': 20.5, # q release
-            'love-chalice': 18, # furina c6
-            'love-chalice-pneuma': 25, # furina c6 pneuma
+            'judgment': 14.47, # charged: equitable judgment
+            'tear-repay': 23.16, # e release
+            'tide-return': 40.06, # q release
+            'tide-return-waterfall': 16.39, # q following
         }
+        self.authority = 1.6 # 3 stacks
         self.requirement = {
             'set-type': '4pcs',
-            'set-restriction': ['goldentroupe'],
+            'set-restriction': ['marechaussee'],
         }
-        self.recharge_thres = 150 # randomly set in favor of recharge hourglass
+        self.recharge_thres = 100
         self.artifacts = ArtifactCollection([])
         self.apply_weapon()
         # self.apply_team()
-
-    # furina talent2
-    def confession_bonus(self, fanfare=0):
-        if fanfare <= 400:
-            return min(28, (self.hp()) * 0.7/1000)
-        return min(28, (self.hp()+self.fanfare_hp(fanfare)) * 0.7/1000)
-    
-    # fanfare to buff
-    def fanfare_bonus(self, fanfare):
-        return 0.25 * min(fanfare, 400)
-    
-    def fanfare_hp_percent(self, fanfare):
-        return max(0, 0.35 * (min(fanfare, 800) - 400))
-    
-    def fanfare_hp(self, fanfare):
-        return 0.01 * self.fanfare_hp_percent(fanfare) * self.attrs['hp0'][0]
     
     def apply_weapon(self):
-        if self.weapon == 'tranquil':
-            self.apply_tranquil()
-        elif self.weapon == 'misugiri':
-            self.apply_misugiri()
+        if self.weapon == 'eternalflow':
+            self.apply_eternalflow()
+        elif self.weapon == 'windprayer':
+            self.apply_windprayer()
         elif self.weapon == 'jade':
-            self.apply_primodial_jade()
-        elif self.weapon == 'favonius':
-            self.apply_favonius()
+            self.apply_sacrificial_jade()
+        elif self.weapon == 'prototype':
+            self.apply_prototype_amber()
     
-    def apply_tranquil(self):
+    # tome of the eternal flow
+    def apply_eternalflow(self):
         self.apply_modifier('atk0', 542)
         self.apply_modifier('cd', 88.2)
-        self.apply_modifier('H', 28)
-        self.apply_modifier('skill', 24)
+        self.apply_modifier('H', 16)
+        self.apply_modifier('charged', 42)
 
-    def apply_misugiri(self, geo=False):
-        self.apply_modifier('atk0', 542)
-        self.apply_modifier('cd', 88.2)
-        self.apply_modifier('normal', 16)
-        self.apply_modifier('skill', 24)
-        self.apply_modifier('D', 20)
-        if geo:
-            self.apply_modifier('skill', 24)
+    # lost prayer to the sacred winds
+    def apply_windprayer(self):
+        # suppose max stack
+        self.apply_modifier('atk0', 608)
+        self.apply_modifier('cr', 33.1)
+        self.apply_modifier('bns', 32)
 
-    def apply_primodial_jade(self):
-        self.apply_modifier('atk0', 542)
-        self.apply_modifier('cr', 44.1)
-        self.apply_modifier('H', 20)
-    
-    def jade_atk(self):
-        return (0.012 * self.hp())
-
-    def apply_favonius(self):
+    def apply_sacrificial_jade(self):
+        # refinement 5
         self.apply_modifier('atk0', 454)
-        self.apply_modifier('rcg', 61.3)
+        self.apply_modifier('cr', 36.8)
+        self.apply_modifier('H', 64)
+        self.apply_modifier('em', 80)
+
+    def apply_prototype_amber(self):
+        self.apply_modifier('atk0', 510)
+        self.apply_modifier('H', 41.3)
 
     def apply_artifacts(self, artifacts):
         super().apply_artifacts(artifacts)
-        if self.artifacts.contains('goldentroupe', 2):
-            self.apply_modifier('skill', 25)
-        if self.artifacts.contains('goldentroupe', 4):
-            self.apply_modifier('skill', 50)
-        if self.artifacts.contains('emblem', 2):
-            self.apply_modifier('rcg', 20)
+        if self.artifacts.contains('marechaussee', 2):
+            self.apply_modifier('normal', 15)
+            self.apply_modifier('charged', 15)
+        if self.artifacts.contains('marechaussee', 4):
+            self.apply_modifier('cr', 36)
+        if self.artifacts.contains('troupe', 2):
+            self.apply_modifier('em', 80)
+        if self.artifacts.contains('troupe', 4):
+            self.apply_modifier('charged', 35)
         self.apply_h20_artifacts()
         for artifact_set in ['depth', 'nymph']:
             if self.artifacts.contains(artifact_set, 2):
@@ -180,25 +98,20 @@ class Furina(CharacterBase):
         self.apply_artifacts(self.artifacts)
 
     def apply_team(self, team=[]):
-        if 'kokomi' in team or 'yelan' in team or 'xingqiu' in team:
+        if 'furina' in team:
             self.apply_hydro_resonation()
         if 'kazuha' in team:
-            self.apply_modifier('A', 20) # freedom-sworn 
+            self.apply_modifier('A', 20) # freedom-sworn
             self.apply_modifier('normal', 16) # freedom-sworn
             self.apply_modifier('charged', 16) # freedom-sworn
             self.apply_modifier('plunge', 16) # freedom-sworn            
             self.apply_modifier('res', -40) # viridescent4
             self.apply_modifier('hydro', 42) # talent
-        if 'lynette' in team or 'jean' in team:          
-            self.apply_modifier('res', -40) # viridescent4
-        if 'yelan' in team:
-            # self.apply_modifier('bns', 28) # talent
-            self.apply_modifier('bns', 0) # no buff for off-field
-        if 'xingqiu' in team:
-            self.apply_modifier('res', -15) # c2
+        if 'furina' in team:
+            self.apply_modifier('bns', 100) # fanfare
 
 
-    def optim_target(self, team=['kazuha', 'kokomi', 'yelan'], args=['recharge_thres']):
+    def optim_target(self, team=['kazuha', 'furina', 'baizhu'], args=['recharge_thres']):
         # returns mademoiselle crabaletta damage as feature
 
         if 'recharge_thres' in args and self.rcg() < self.recharge_thres:

@@ -15,7 +15,12 @@ import argparse
 
 
 def main(args):
+    mode = args.mode
     character = args.chara
+
+    if mode == 'benchmark':
+        return
+    
     if character == 'ayaka':
         ayaka = characters.ayaka.Ayaka(weapon='mistsplitter', cryo_weight=1, frozen_weight=0.5)
         ayaka_path = './artefacts/ayaka'
@@ -51,6 +56,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Sangonomiya')
+    parser.add_argument('--mode', type=str, default='optim', help='mode')
     parser.add_argument('--chara', type=str, default='ayaka', help='character')
     parser.add_argument('--option-cnt', type=int, default=5, help='optimal options')
     main(parser.parse_args())

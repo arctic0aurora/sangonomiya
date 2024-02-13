@@ -88,7 +88,10 @@ class Ayaka(CharacterBase):
         if 'shenhe' in team or 'ganyu' in team:
             self.apply_cryo_resonation()
         if 'kazuha' in team:
-            self.apply_modifier('A', 20) # freedom-sworn            
+            self.apply_modifier('A', 20) # freedom-sworn
+            self.apply_modifier('normal', 16) # freedom-sworn
+            self.apply_modifier('charged', 16) # freedom-sworn
+            self.apply_modifier('plunge', 16) # freedom-sworn            
             self.apply_modifier('res', -40) # viridescent4
             self.apply_modifier('cryo', 42) # talent
         if 'kokomi' in team:
