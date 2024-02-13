@@ -100,7 +100,7 @@ class Furina(CharacterBase):
             'set-type': '4pcs',
             'set-restriction': ['goldentroupe'],
         }
-        self.recharge_thres = 150 # randomly set in favor of recharge hourglass
+        self.recharge_thres = 155 # randomly set in favor of recharge hourglass
         self.artifacts = ArtifactCollection([])
         self.apply_weapon()
         # self.apply_team()

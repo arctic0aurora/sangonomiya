@@ -23,7 +23,7 @@ class Neuvillette(CharacterBase):
         }
         self.attrs = self.construct_attrs(neuvillette_base)
         self.mult = {
-            'judgment': 14.47, # charged: equitable judgment
+            'judgment': 14.47, # charged: equitable judgment (8 per release C0)
             'tear-repay': 23.16, # e release
             'tide-return': 40.06, # q release
             'tide-return-waterfall': 16.39, # q following
@@ -80,10 +80,9 @@ class Neuvillette(CharacterBase):
             self.apply_modifier('charged', 15)
         if self.artifacts.contains('marechaussee', 4):
             self.apply_modifier('cr', 36)
-        if self.artifacts.contains('troupe', 2):
-            self.apply_modifier('em', 80)
-        if self.artifacts.contains('troupe', 4):
-            self.apply_modifier('charged', 35)
+        if self.artifacts.contains('depth', 4):
+            self.apply_modifier('normal', 30)
+            self.apply_modifier('charged', 30)
         self.apply_h20_artifacts()
         for artifact_set in ['depth', 'nymph']:
             if self.artifacts.contains(artifact_set, 2):
@@ -112,7 +111,7 @@ class Neuvillette(CharacterBase):
 
 
     def optim_target(self, team=['kazuha', 'furina', 'baizhu'], args=['recharge_thres']):
-        # returns mademoiselle crabaletta damage as feature
+        # returns charged attack damage
 
         if 'recharge_thres' in args and self.rcg() < self.recharge_thres:
             return Composite(), {}

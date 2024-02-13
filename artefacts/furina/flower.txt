@@ -96,6 +96,13 @@ D = 7.3
 em = 37
 cd = 21.0
 
+goldentroupe
+h = 4780
+cd = 13.2
+cr = 7.4
+em = 23
+H = 14.6
+
 emblem
 h = 4780
 cd = 6.2

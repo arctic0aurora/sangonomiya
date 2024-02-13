@@ -3,6 +3,7 @@ from chara import *
 from artifact import *
 from formation import *
 from optim import *
+from benchmark import *
 
 import characters.ayaka
 import characters.furina
@@ -19,7 +20,7 @@ def main(args):
     character = args.chara
 
     if mode == 'benchmark':
-        return
+        optim = BenchmarkOptimizer(character,)
     
     if character == 'ayaka':
         ayaka = characters.ayaka.Ayaka(weapon='mistsplitter', cryo_weight=1, frozen_weight=0.5)
