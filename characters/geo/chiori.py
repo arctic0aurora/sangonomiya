@@ -7,147 +7,180 @@ from optim import *
 import numpy as np
 
 class Chiori(CharacterBase):
-    def __init__(self, weapon='yuraku'):
-        super().__init__()
+    def __init__(self, weapon='misugiri'):
         self.name = 'Chiori'
-        self.attrs = {
-            'hp0': np.array([11437]), # hitpoint
-            'atk0': np.array([323]), # attack
-            'df0': np.array([953]), # defence
-            'spd0': np.array([100]), # speed
-            'cr': np.array([24.2]), # crit rate
-            'cd': np.array([50]), # crit damage
-            'rcg': np.array([100]), # recharge
-            'bns': np.array([0]), # damage bonus
-            'em': np.array([0]), # elemental mastery
-            'res': np.array([10]), # resistance (reduction)
-            'rdf': np.array([0]), # defence (reduction)
-            'H': np.array([0]), # hp percentage
-            'h': np.array([0]), # hp increment
-            'A': np.array([0]), # atk percentage
-            'a': np.array([0]), # atk increment
-            'D': np.array([0]), # def percentage
-            'd': np.array([0]), # def increment
-            'S': np.array([0]), # spd percentage
-            's': np.array([0]), # spd increment
-            'geo': np.array([20]), # geo damage bonus [chiori talent2]
-            'skill': np.array([0]), # skill damage bonus
+        self.weapon = weapon
+        chiori_base = {
+            'hp0': 11438,
+            'atk0': 323,
+            'df0': 953,
+            'cr': 24.2,
+            'cd': 50,
+            'rcg': 100,
+            'em': 0,
+            'geo': 20, # chiori talent2
+        }
+        self.attrs = self.construct_attrs(chiori_base)
+        self.mult = {
+            'hasode-a': 269, # e release
+            'hasode-d': 336, 
+            'sode-a': 148, # e summon
+            'sode-d': 185, 
+            'hiyoku-a': 461, # q release
+            'hiyoku-d': 576, 
+            'a1-a': 97.7, # normal attack 1
+            'c6-d': 235, # chiori c6
         }
         self.requirement = {
-            'thres': 0,
-            'set_restriction': {'goldentroupe':4},
-            'alternative': {'husk':4}
+            'set-type': '4pcs',
+            'set-restriction': ['goldentroupe', 'husk'],
         }
-        self.weapon = weapon   
+        self.recharge_thres = 150 # under which only cast q every 2 rotations
+        self.artifacts = ArtifactCollection([])
         self.apply_weapon()
-        self.apply_resonation()
         # self.apply_team()
-
-    def geo(self):
-        return np.sum(self.attrs['geo'])
-    
-    def skill(self):
-        return np.sum(self.attrs['skill'])
-    
-    
+       
     def apply_weapon(self):
-        if self.weapon == 'yuraku':
-            self.apply_yuraku()
+        if self.weapon == 'misugiri':
+            self.apply_misugiri()
         elif self.weapon == 'jade':
             self.apply_primodial_jade()
 
-    def apply_primodial_jade(self):
-        self.attrs['atk0'] = np.append(self.attrs['atk0'], 542)
-        self.attrs['cr'] = np.append(self.attrs['cr'], 44.1)
-        self.attrs['H'] = np.append(self.attrs['H'], 20)
+    def apply_misugiri(self, geo=True):
+        self.apply_modifier('atk0', 542)
+        self.apply_modifier('cd', 88.2)
+        self.apply_modifier('normal', 16)
+        self.apply_modifier('skill', 24)
+        self.apply_modifier('D', 20)
+        if geo:
+            self.apply_modifier('skill', 24)
 
-    def apply_yuraku(self):
-        self.attrs['atk0'] = np.append(self.attrs['atk0'], 542)
-        self.attrs['cd'] = np.append(self.attrs['cd'], 88.2)
-        self.attrs['skill'] = np.append(self.attrs['skill'], 48)
-        self.attrs['D'] = np.append(self.attrs['D'], 20)
+    def apply_primodial_jade(self):
+        self.apply_modifier('atk0', 542)
+        self.apply_modifier('cr', 44.1)
+        self.apply_modifier('H', 20)
+
+    def jade_atk(self):
+        return (0.012 * self.hp())
 
     def apply_artifacts(self, artifacts):
         super().apply_artifacts(artifacts)
-        if 'goldentroupe' in self.artifacts.set_counts and self.artifacts.set_counts['goldentroupe'] >= 2:
-            self.attrs['skill'] = np.append(self.attrs['skill'], 25)
-        if 'goldentroupe' in self.artifacts.set_counts and self.artifacts.set_counts['goldentroupe'] >= 4:
-            self.attrs['skill'] = np.append(self.attrs['skill'], 50)
-        if 'husk' in self.artifacts.set_counts and self.artifacts.set_counts['husk'] >= 2:
-            self.attrs['D'] = np.append(self.attrs['D'], 30)
-        if 'husk' in self.artifacts.set_counts and self.artifacts.set_counts['husk'] >= 4:
-            self.attrs['D'] = np.append(self.attrs['D'], 24)
-            self.attrs['geo'] = np.append(self.attrs['geo'], 24)
+        if self.artifacts.contains('goldentroupe', 2):
+            self.apply_modifier('skill', 25)
+        if self.artifacts.contains('goldentroupe', 4):
+            self.apply_modifier('skill', 50)
+        if self.artifacts.contains('husk', 2):
+            self.apply_modifier('D', 30)
+        if self.artifacts.contains('husk', 4):
+            self.apply_modifier('D', 24)
+            self.apply_modifier('geo', 24)
 
     def apply_resonation(self):
-        self.attrs['bns'] = np.append(self.attrs['bns'], 15) # geo resonation
-        self.attrs['res'] = np.append(self.attrs['res'], -20)
+        self.apply_modifier('bns', 15) # geo resonation
+        self.apply_modifier('res', -20)
     
     def reset_team(self):
         super().reset_stats()
         self.apply_weapon()
         self.apply_artifacts(self.artifacts)
-        self.apply_resonation()
 
     def apply_team(self, team=[]):
+        if 'albedo' in team or 'gorou' in team or 'noelle' in team or 'zhongli' in team or 'navia' in team:
+            self.apply_resonation()
         if 'gorou' in team:
-            self.attrs['d'] = np.append(self.attrs['d'], 438) # skill
-            self.attrs['geo'] = np.append(self.attrs['geo'], 15) # skill         
-            self.attrs['D'] = np.append(self.attrs['D'], 25) # talent
-            self.attrs['cd'] = np.append(self.attrs['cd'], 40) # c6
+            self.apply_modifier('d', 438) # skill
+            self.apply_modifier('geo', 15) # skill
+            self.apply_modifier('D', 25) # talent
+            self.apply_modifier('cd', 40) # c6
         if 'furina' in team:
-            self.attrs['bns'] = np.append(self.attrs['bns'], 100) # fanfare
+            self.apply_modifier('bns', 100) # fanfare
         if 'zhongli' in team:
-            self.attrs['res'] = np.append(self.attrs['res'], -20) # skill
-        
-    
+            self.apply_modifier('geo', -20) # skill
+
+
     def optim_target(self, team=['furina', 'albedo', 'noelle'], args=['recharge_thres']):
-        if 'recharge_thres' in args and self.rcg() < 100:
-            return Composite(), {}
+        # returns hasode + sode*5*2 + tapestry*2 + hiyoku(*0.5)
 
-        skill_amult = 268.70
-        skill_dmult = 335.88
-        summon_amult = 147.74
-        summon_dmult = 184.68
-        burst_amult = 651.45
-        burst_dmult = 814.32
-
+        hiyoku_freq = 1
+        if 'recharge_thres' in args and self.rcg() < self.recharge_thres:
+            hiyoku_freq = 0.5
+        
         self.apply_team(team)
-
-        skill_a = calc_damage(skill_amult,
-            self.atk(), self.cr(), self.cd(), self.bns()+self.geo()+self.skill(),
-            self.res(), self.rdf())
         
-        skill_d = calc_damage(skill_dmult,
-            self.df(), self.cr(), self.cd(), self.bns()+self.geo()+self.skill(),
-            self.res(), self.rdf())
+        # hasode (e) & tapestry (talent1)
+        hasode_a = calc_damage(
+            self.mult['hasode-a'],
+            self.atk(), self.cr(), self.cd(), self.bns(['geo','skill']),
+            self.res()
+        )
         
-        summon_a = calc_damage(summon_amult,
-            self.atk(), self.cr(), self.cd(), self.bns()+self.geo()+self.skill(),
-            self.res(), self.rdf())
+        hasode_d = calc_damage(
+            self.mult['hasode-d'],
+            self.df(), self.cr(), self.cd(), self.bns(['geo','skill']),
+            self.res()
+        )
         
-        summon_d = calc_damage(summon_dmult,
-            self.df(), self.cr(), self.cd(), self.bns()+self.geo()+self.skill(),
-            self.res(), self.rdf())
+        # sode (e summon)
+        sode_a = calc_damage(
+            self.mult['sode-a'],
+            self.atk(), self.cr(), self.cd(), self.bns(['geo','skill']),
+            self.res()
+        )
         
-        burst_a = calc_damage(burst_amult,
-            self.atk(), self.cr(), self.cd(), self.bns()+self.geo(),
-            self.res(), self.rdf())
+        sode_d = calc_damage(
+            self.mult['sode-d'],
+            self.df(), self.cr(), self.cd(), self.bns(['geo','skill']),
+            self.res()
+        )
         
-        burst_d = calc_damage(burst_dmult,
-            self.df(), self.cr(), self.cd(), self.bns()+self.geo(),
-            self.res(), self.rdf())
+        # hiyoku (q)
+        hiyoku_a = calc_damage(
+            self.mult['hiyoku-a'],
+            self.atk(), self.cr(), self.cd(), self.bns(['geo','burst']),
+            self.res()
+        )
         
-        skill = skill_a + skill_d
-        summon = summon_a + summon_d
-        burst = burst_a + burst_d
-
-        feature = skill*(1+2) + summon*(5*2) + burst
+        hiyoku_d = calc_damage(
+            self.mult['hiyoku-d'],
+            self.df(), self.cr(), self.cd(), self.bns(['geo','burst']),
+            self.res()
+        )
+        
+        hasode = hasode_a + hasode_d
+        sode = sode_a + sode_d
+        hiyoku = hiyoku_a + hiyoku_d
+        
+        feature = hasode*3 + sode*10 + hiyoku*hiyoku_freq
         
         self.reset_team()
 
-        return feature, {'summon': summon,
-                         'skill': skill, 
-                         'burst': burst, 
-                         'summon(atk)': summon_a,
-                         'summon(def)': summon_d,}
+        return feature, {
+            'hasode/tapestry': hasode,
+            'sode': sode,
+            'hiyoku': hiyoku,
+            }
+    
+
+    def additional_feature(self, team=['furina', 'albedo', 'noelle'], args=['recharge_thres']):
+        # returns c6 a1 damage
+
+        self.apply_team(team)
+
+        a1_a = calc_damage(
+            self.mult['a1-a'],
+            self.atk(), self.cr(), self.cd(), self.bns(['geo','normal']),
+            self.res()
+        )
+
+        a1_c6 = calc_damage(
+            self.mult['c6-d'],
+            self.df(), self.cr(), self.cd(), self.bns(['geo','normal']),
+            self.res()
+        )
+
+        a1 = a1_a + a1_c6
+
+        return {
+            'a1(pursuit)': a1,
+            'pursuit': a1_c6,
+            }

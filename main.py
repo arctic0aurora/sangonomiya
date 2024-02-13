@@ -23,7 +23,8 @@ def main(args):
         optim.optimize_artifacts(requirement=ayaka.requirement)
         optim.print_options(counts=args.option_cnt)
     elif character == 'furina':
-        furina = characters.furina.Furina(weapon='jade', rejoice_weight=0.8, duckweed_weight=0.5)
+        characters.furina.Furina.fanfare_sequence = characters.furina.fanfare_simulation()
+        furina = characters.furina.Furina(weapon='misugiri', rejoice_weight=0.8, duckweed_weight=0.5)
         furina_path = './artefacts/furina'
         optim = Optimizer(furina, furina_path, team=['kazuha', 'kokomi', 'yelan'], args=['recharge_thres'])
         optim.optimize_artifacts(requirement=furina.requirement)
@@ -41,9 +42,9 @@ def main(args):
         optim.optimize_artifacts(requirement=noelle.requirement)
         optim.print_options(counts=args.option_cnt)
     elif character == 'chiori':
-        chiori = characters.geo.chiori.Chiori(weapon='yuraku')
+        chiori = characters.geo.chiori.Chiori(weapon='misugiri')
         chiori_path = './artefacts/geo'
-        optim = Optimizer(chiori, chiori_path, team=['albedo', 'gorou', 'zhongli'], args=['recharge_thres'])
+        optim = Optimizer(chiori, chiori_path, team=['noelle', 'gorou', 'furina'], args=['recharge_thres'])
         optim.optimize_artifacts(requirement=chiori.requirement)
         optim.print_options(counts=args.option_cnt)
 

@@ -70,7 +70,7 @@ def fanfare_simulation(print_sequence=True):
 
 class Furina(CharacterBase):
 
-    fanfare_sequence = fanfare_simulation()
+    fanfare_sequence = []
 
     def __init__(self, weapon='jade', rejoice_weight=0.8, duckweed_weight=0.5):
         self.name = 'Furina'
@@ -150,6 +150,9 @@ class Furina(CharacterBase):
         self.apply_modifier('atk0', 542)
         self.apply_modifier('cr', 44.1)
         self.apply_modifier('H', 20)
+    
+    def jade_atk(self):
+        return (0.012 * self.hp())
 
     def apply_favonius(self):
         self.apply_modifier('atk0', 454)
@@ -202,22 +205,22 @@ class Furina(CharacterBase):
         
         # mademoiselle crabaletta
         large_initial = calc_damage(
-                self.mult['large'],
-                self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
-                self.res()
-            )
+            self.mult['large'],
+            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+            self.res()
+        )
         
         large_rejoice = calc_damage(
-                self.mult['large'],
-                self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
-                self.res()
-            )
+            self.mult['large'],
+            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
+            self.res()
+        )
         
         large_duckweed = calc_damage(
-                self.mult['large'],
-                self.hp()+self.fanfare_hp(800), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
-                self.res()
-            )
+            self.mult['large'],
+            self.hp()+self.fanfare_hp(800), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
+            self.res()
+        )
         
         feature = large_duckweed*self.duckweed_weight + large_rejoice*(self.rejoice_weight-self.duckweed_weight) + large_initial*(1-self.rejoice_weight)
         
@@ -233,36 +236,36 @@ class Furina(CharacterBase):
 
         # elemental burst
         rejoice = calc_damage(
-                self.mult['rejoice'],
-                self.hp(), self.cr(), self.cd(), self.bns(['hydro','burst'])+self.fanfare_bonus(100)+self.confession_bonus(100),
-                self.res()
-            )
+            self.mult['rejoice'],
+            self.hp(), self.cr(), self.cd(), self.bns(['hydro','burst'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+            self.res()
+        )
         
         # elemental skill release
         bubble = calc_damage(
-                self.mult['solitaire-bubble'],
-                self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
-                self.res()
-            )
+            self.mult['solitaire-bubble'],
+            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+            self.res()
+        )
         
         # calculate 3 summons with unit damage
         unit_initial = calc_damage(
-                1,
-                self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
-                self.res()
-            )
+            1,
+            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+            self.res()
+        )
         
         unit_rejoice = calc_damage(
-                1,
-                self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
-                self.res()
-            )
+            1,
+            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
+            self.res()
+        )
         
         unit_duckweed = calc_damage(
-                1,
-                self.hp()+self.fanfare_hp(800), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
-                self.res()
-            )
+            1,
+            self.hp()+self.fanfare_hp(800), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
+            self.res()
+        )
 
         salon_cumulative = Composite()
         for action in Furina.fanfare_sequence:
