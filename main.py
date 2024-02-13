@@ -20,7 +20,8 @@ def main(args):
     character = args.chara
 
     if mode == 'benchmark':
-        optim = BenchmarkOptimizer(character,)
+        optim = BenchmarkOptimizer(character)
+        optim.optimize_benchmark()
     
     if character == 'ayaka':
         ayaka = characters.ayaka.Ayaka(weapon='mistsplitter', cryo_weight=1, frozen_weight=0.5)

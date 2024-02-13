@@ -24,26 +24,24 @@ class ArtifactCollection():
         self.set_counts = self.count_sets()
         # self.attrs = self.calculate_attrs()
 
+    def append(self, artifact:Artifact):
+        self.alist.append(artifact)
+        self.set_counts[artifact.set] = self.set_counts.get(artifact.set, 0) + 1
+
     def contains(self, set, num):
         return (set in self.set_counts and self.set_counts[set] >= num)
 
     def count_sets(self):
         sets = {}
         for artifact in self.alist:
-            if artifact.set in sets:
-                sets[artifact.set] += 1
-            else:
-                sets[artifact.set] = 1
+            sets[artifact.set] = sets.get(artifact.set, 0) + 1
         return sets
 
     def calculate_attrs(self):
         attrs = {}
         for artifact in self.alist:
             for key in artifact.attrs:
-                if key in attrs:
-                    attrs[key] += artifact.attrs[key]
-                else:
-                    attrs[key] = artifact.attrs[key]
+                attrs[key] = attrs.get(key, 0) + artifact.attrs[key]
         return attrs
     
     def print(self):

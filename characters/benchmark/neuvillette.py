@@ -33,7 +33,7 @@ class Neuvillette(CharacterBase):
             'set-type': '4pcs',
             'set-restriction': ['marechaussee'],
         }
-        self.recharge_thres = 100
+        self.recharge_thres = 115
         self.artifacts = ArtifactCollection([])
         self.apply_weapon()
         # self.apply_team()
