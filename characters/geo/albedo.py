@@ -8,139 +8,141 @@ import numpy as np
 
 class Albedo(CharacterBase):
     def __init__(self, weapon='spindle'):
-        super().__init__()
         self.name = 'Albedo'
-        self.attrs = {
-            'hp0': np.array([13226]), # hitpoint
-            'atk0': np.array([251]), # attack
-            'df0': np.array([876]), # defence
-            'spd0': np.array([100]), # speed
-            'cr': np.array([5]), # crit rate
-            'cd': np.array([50]), # crit damage
-            'rcg': np.array([100]), # recharge
-            'bns': np.array([0]), # damage bonus
-            'em': np.array([0]), # elemental mastery
-            'res': np.array([10]), # resistance (reduction)
-            'rdf': np.array([0]), # defence (reduction)
-            'H': np.array([0]), # hp percentage
-            'h': np.array([0]), # hp increment
-            'A': np.array([0]), # atk percentage
-            'a': np.array([0]), # atk increment
-            'D': np.array([0]), # def percentage
-            'd': np.array([0]), # def increment
-            'S': np.array([0]), # spd percentage
-            's': np.array([0]), # spd increment
-            'geo': np.array([28.8]), # geo damage bonus [chiori talent2]
-            'skill': np.array([0]), # skill damage bonus
+        self.weapon = weapon
+        albedo_base = {
+            'hp0': 13226,
+            'atk0': 251,
+            'df0': 876,
+            'cr': 5,
+            'cd': 50,
+            'rcg': 100,
+            'geo': 28.8,
         }
+        self.attrs = self.construct_attrs(albedo_base)
+        self.mult = {
+            'abiogenesis': 235, # e release (atk)
+            'solar-isotoma': 240, # e summon (def) 
+            'tectonic-tide': 661, # q release (atk)
+            'fatal-blossom': 129.6, # q following (atk)
+        }
+        self.spindle_mult = 0
         self.requirement = {
-            'thres': 0,
-            'set_restriction': {'goldentroupe':4},
-            'alternative': {'husk':4}
+            'set-type': '4pcs',
+            'set-restriction': ['goldentroupe', 'husk'],
         }
-        self.weapon = weapon   
+        self.recharge_thres = 100
+        self.artifacts = ArtifactCollection([])
         self.apply_weapon()
-        self.apply_resonation()
         # self.apply_team()
-
-    def geo(self):
-        return np.sum(self.attrs['geo'])
-    
-    def skill(self):
-        return np.sum(self.attrs['skill'])
-    
-    
+       
     def apply_weapon(self):
-        if self.weapon == 'yuraku':
-            self.apply_yuraku()
+        if self.weapon == 'misugiri':
+            self.apply_misugiri()
         elif self.weapon == 'spindle':
             self.apply_spindle()
 
-    def apply_spindle(self):
-        self.attrs['atk0'] = np.append(self.attrs['atk0'], 454)
-        self.attrs['D'] = np.append(self.attrs['D'], 69.0)
+    def apply_misugiri(self, geo=True):
+        self.apply_modifier('atk0', 542)
+        self.apply_modifier('cd', 88.2)
+        self.apply_modifier('normal', 16)
+        self.apply_modifier('skill', 24)
+        self.apply_modifier('D', 20)
+        if geo:
+            self.apply_modifier('skill', 24)
 
-    def apply_yuraku(self):
-        self.attrs['atk0'] = np.append(self.attrs['atk0'], 542)
-        self.attrs['cd'] = np.append(self.attrs['cd'], 88.2)
-        self.attrs['skill'] = np.append(self.attrs['skill'], 48)
-        self.attrs['D'] = np.append(self.attrs['D'], 20)
+    def apply_spindle(self):
+        self.apply_modifier('atk0', 454)
+        self.apply_modifier('D', 69)
+        self.spindle_mult = 80
 
     def apply_artifacts(self, artifacts):
         super().apply_artifacts(artifacts)
-        if 'goldentroupe' in self.artifacts.set_counts and self.artifacts.set_counts['goldentroupe'] >= 2:
-            self.attrs['skill'] = np.append(self.attrs['skill'], 25)
-        if 'goldentroupe' in self.artifacts.set_counts and self.artifacts.set_counts['goldentroupe'] >= 4:
-            self.attrs['skill'] = np.append(self.attrs['skill'], 50)
-        if 'husk' in self.artifacts.set_counts and self.artifacts.set_counts['husk'] >= 2:
-            self.attrs['D'] = np.append(self.attrs['D'], 30)
-        if 'husk' in self.artifacts.set_counts and self.artifacts.set_counts['husk'] >= 4:
-            self.attrs['D'] = np.append(self.attrs['D'], 24)
-            self.attrs['geo'] = np.append(self.attrs['geo'], 24)
+        if self.artifacts.contains('goldentroupe', 2):
+            self.apply_modifier('skill', 25)
+        if self.artifacts.contains('goldentroupe', 4):
+            self.apply_modifier('skill', 50)
+        if self.artifacts.contains('husk', 2):
+            self.apply_modifier('D', 30)
+        if self.artifacts.contains('husk', 4):
+            self.apply_modifier('D', 24)
+            self.apply_modifier('geo', 24)
 
     def apply_resonation(self):
-        self.attrs['bns'] = np.append(self.attrs['bns'], 15) # geo resonation
-        self.attrs['res'] = np.append(self.attrs['res'], -20)
+        self.apply_modifier('bns', 15) # geo resonation
+        self.apply_modifier('res', -20)
     
     def reset_team(self):
         super().reset_stats()
         self.apply_weapon()
         self.apply_artifacts(self.artifacts)
-        self.apply_resonation()
 
     def apply_team(self, team=[]):
+        if 'chiori' in team or 'gorou' in team or 'noelle' in team or 'zhongli' in team or 'navia' in team:
+            self.apply_resonation()
         if 'gorou' in team:
-            self.attrs['d'] = np.append(self.attrs['d'], 438) # skill
-            self.attrs['geo'] = np.append(self.attrs['geo'], 15) # skill         
-            self.attrs['D'] = np.append(self.attrs['D'], 25) # talent
-            self.attrs['cd'] = np.append(self.attrs['cd'], 40) # c6
+            self.apply_modifier('d', 438) # skill
+            self.apply_modifier('geo', 15) # skill
+            self.apply_modifier('D', 25) # talent
+            self.apply_modifier('cd', 40) # c6
         if 'furina' in team:
-            self.attrs['bns'] = np.append(self.attrs['bns'], 100) # fanfare
+            self.apply_modifier('bns', 100) # fanfare
         if 'zhongli' in team:
-            self.attrs['res'] = np.append(self.attrs['res'], -20) # skill
+            self.apply_modifier('geo', -20) # skill
+
+
+    def optim_target(self, team=['noelle', 'gorou', 'furina'], args=['recharge_thres']):
+        # returns rotation damage as feature
+
+        progeniture_freq = 1
+        if 'recharge_thres' in args and self.rcg() < self.recharge_thres:
+            progeniture_freq = 0.5 # q once per 2 rotations
         
-    
-    def optim_target(self, team=['furina', 'chiori', 'noelle'], args=['recharge_thres']):
-        if 'recharge_thres' in args and self.rcg() < 100:
-            return Composite(), {}
-
-        abiogenesis_mult = 235
-        solar_isotoma_mult = 240
-        progeniture_mult = 661
-        blossom_mult = 129.6 # 7 blossoms
-        spindle_mult = 80
-
         self.apply_team(team)
-
-        abiogenesis = calc_damage(abiogenesis_mult,
-            self.atk(), self.cr(), self.cd(), self.bns()+self.geo()+self.skill(),
-            self.res(), self.rdf())
-        
-        solar_isotoma = calc_damage(solar_isotoma_mult,
-            self.df(), self.cr(), self.cd(), self.bns()+self.geo()+self.skill(),
-            self.res(), self.rdf())
-        
-        progeniture = calc_damage(progeniture_mult,
-            self.atk(), self.cr(), self.cd(), self.bns()+self.geo(),
-            self.res(), self.rdf())
-        
-        blossom = calc_damage(blossom_mult,
-            self.atk(), self.cr(), self.cd(), self.bns()+self.geo(),
-            self.res(), self.rdf())
-        
-        tecnotic_tide = progeniture + blossom*7
-
-        spindle = Composite()    
+               
+        solar_isotoma = calc_damage(
+            self.mult['solar-isotoma'],
+            self.df(), self.cr(), self.cd(), self.bns(['geo','skill']),
+            self.res()
+        )
+        spindle_extra = Composite()
         if self.weapon == 'spindle':
-            spindle = calc_damage(spindle_mult,
-                self.df(), self.cr(), self.cd(), self.bns()+self.geo()+self.skill(),
-                self.res(), self.rdf())
+            spindle_extra = calc_damage(
+                self.spindle_mult,
+                self.df(), self.cr(), self.cd(), self.bns(['geo','skill']),
+                self.res()
+            )      
+        solar_isotoma = solar_isotoma + spindle_extra
 
-        solar_isotoma = solar_isotoma + spindle
-        feature = abiogenesis + solar_isotoma*10 + tecnotic_tide
+        abiogenesis = calc_damage(
+            self.mult['abiogenesis'],
+            self.atk(), self.cr(), self.cd(), self.bns(['geo','skill']),
+            self.res()
+        )
+
+        tectonic_tide = calc_damage(
+            self.mult['tectonic-tide'],
+            self.atk(), self.cr(), self.cd(), self.bns(['geo','burst']),
+            self.res()
+        )
+        blossom = calc_damage(
+            self.mult['fatal-blossom'],
+            self.atk(), self.cr(), self.cd(), self.bns(['geo','burst']),
+            self.res()
+        )
+        progeniture_rite = tectonic_tide + blossom*7
+
+        feature = solar_isotoma*10 + abiogenesis + progeniture_rite * progeniture_freq
         
         self.reset_team()
 
-        return feature, {'solar isotoma': solar_isotoma,
-                         'abiogenesis': abiogenesis, 
-                         'progeniture': tecnotic_tide, }
+        return feature, {
+            'solar isotoma': solar_isotoma,
+            'abiogenesis': abiogenesis,
+            'progeniture rite': progeniture_rite,
+            }
+        
+    def additional_feature(self, team=['noelle', 'gorou', 'furina'], args=['recharge_thres']):
+        # returns none
+        return {}
+    
