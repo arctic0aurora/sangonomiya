@@ -76,6 +76,7 @@ class CharacterBase():
             'electro': np.array([0]), # electro dmg bonus
             'geo': np.array([0]), # geo dmg bonus
             'dendro': np.array([0]), # dendro dmg bonus
+            'physical': np.array([0]), # physical dmg bonus
             'normal': np.array([0]), # normal atk dmg bonus
             'charged': np.array([0]), # charged atk dmg bonus
             'plunge': np.array([0]), # plunge atk dmg bonus

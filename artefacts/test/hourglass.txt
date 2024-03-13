@@ -1,0 +1,14 @@
+any
+H = 46.6
+
+any
+A = 46.6
+
+any
+D = 58.3
+
+any
+em = 187
+
+any
+rcg = 51.8

@@ -44,10 +44,10 @@ class Amplify:
         return (2.78*em) / (em+1400)
 
     def amplify(self, em):
-        return self.base * self.em_mult(em)
+        return self.base * (1+self.em_mult(em))
 
     def reverse_amplify(self, em):
-        return self.reverse_base * self.em_mult(em)
+        return self.reverse_base * (1+self.em_mult(em))
 
 
 intensify = Intensify()

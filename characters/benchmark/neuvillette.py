@@ -33,7 +33,7 @@ class Neuvillette(CharacterBase):
             'set-type': '4pcs',
             'set-restriction': ['marechaussee'],
         }
-        self.recharge_thres = 115
+        self.recharge_thres = 130
         self.artifacts = ArtifactCollection([])
         self.apply_weapon()
         # self.apply_team()
@@ -54,6 +54,7 @@ class Neuvillette(CharacterBase):
         self.apply_modifier('cd', 88.2)
         self.apply_modifier('H', 16)
         self.apply_modifier('charged', 42)
+        self.apply_modifier('rcg', 15) # estimation to 8 energy
 
     # lost prayer to the sacred winds
     def apply_windprayer(self):
@@ -111,103 +112,55 @@ class Neuvillette(CharacterBase):
 
 
     def optim_target(self, team=['kazuha', 'furina', 'baizhu'], args=['recharge_thres']):
-        # returns charged attack damage
+        # returns rotation damage (z*3+e*2+q) as feature
 
         if 'recharge_thres' in args and self.rcg() < self.recharge_thres:
             return Composite(), {}
         
         self.apply_team(team)
         
-        # mademoiselle crabaletta
-        large_initial = calc_damage(
-            self.mult['large'],
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+        # charged
+        judgment = calc_damage(
+            self.mult['judgment']*self.authority,
+            self.hp(), self.cr(), self.cd(), self.bns(['hydro','charged']),
+            self.res()
+        )       
+        equitable_judgment = judgment * 8
+        
+        # skill
+        tear_repay = calc_damage(
+            self.mult['tear-repay'],
+            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill']),
             self.res()
         )
         
-        large_rejoice = calc_damage(
-            self.mult['large'],
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
+        # burst
+        tide_return_release = calc_damage(
+            self.mult['tide-return'],
+            self.hp(), self.cr(), self.cd(), self.bns(['hydro','burst']),
             self.res()
         )
-        
-        large_duckweed = calc_damage(
-            self.mult['large'],
-            self.hp()+self.fanfare_hp(800), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
+        tide_return_waterfall = calc_damage(
+            self.mult['tide-return-waterfall'],
+            self.hp(), self.cr(), self.cd(), self.bns(['hydro','burst']),
             self.res()
         )
-        
-        feature = large_duckweed*self.duckweed_weight + large_rejoice*(self.rejoice_weight-self.duckweed_weight) + large_initial*(1-self.rejoice_weight)
+        tide_return = tide_return_release + tide_return_waterfall * 2
+
+        feature = equitable_judgment*3 + tear_repay*2 + tide_return
         
         self.reset_team()
 
-        return feature, {}
+        return feature, {
+            'equitable judgment': equitable_judgment,
+            'equitable judgment single hit': judgment,
+            'tear repay': tear_repay,
+            'tide return': tide_return
+            }
     
 
-    def additional_feature(self, team=['kazuha', 'kokomi', 'yelan'], args=['recharge_thres']):
-        # returns rotation damage q+e 18s
-
-        self.apply_team(team)
-
-        # elemental burst
-        rejoice = calc_damage(
-            self.mult['rejoice'],
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','burst'])+self.fanfare_bonus(100)+self.confession_bonus(100),
-            self.res()
-        )
-        
-        # elemental skill release
-        bubble = calc_damage(
-            self.mult['solitaire-bubble'],
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
-            self.res()
-        )
-        
-        # calculate 3 summons with unit damage
-        unit_initial = calc_damage(
-            1,
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
-            self.res()
-        )
-        
-        unit_rejoice = calc_damage(
-            1,
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
-            self.res()
-        )
-        
-        unit_duckweed = calc_damage(
-            1,
-            self.hp()+self.fanfare_hp(800), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
-            self.res()
-        )
-
-        salon_cumulative = Composite()
-        for action in Furina.fanfare_sequence:
-            action_result = calc_damage(
-                self.mult[action['type']],
-                self.hp()+self.fanfare_hp(action['fanfare']), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(action['fanfare'])+self.confession_bonus(action['fanfare']),
-                self.res()
-            )
-            salon_cumulative = salon_cumulative + action_result
-        
-        self.reset_team()
-
-        return {
-            'rotation total': rejoice+bubble+salon_cumulative,
-            'salon solitaire total': salon_cumulative,
-            'rejoice': rejoice,
-            'ousia bubble': bubble,
-            'surintendante chevalmarin(initial)': unit_initial*self.mult['small'],
-            'surintendante chevalmarin(rejoice)': unit_rejoice*self.mult['small'],
-            'surintendante chevalmarin(duckweed)': unit_duckweed*self.mult['small'],
-            'gentilhomme usher(initial)': unit_initial*self.mult['medium'],
-            'gentilhomme usher(rejoice)': unit_rejoice*self.mult['medium'],
-            'gentilhomme usher(duckweed)': unit_duckweed*self.mult['medium'],
-            'mademoiselle crabaletta(initial)': unit_initial*self.mult['large'],
-            'mademoiselle crabaletta(rejoice)': unit_rejoice*self.mult['large'],
-            'mademoiselle crabaletta(duckweed)': unit_duckweed*self.mult['large'],
-            }
+    def additional_feature(self, team=[], args=[]):
+        return {}
 
 
 

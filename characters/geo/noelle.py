@@ -6,147 +6,169 @@ from optim import *
 
 import numpy as np
 
-class Noelle(CharacterBase):
-    def __init__(self, weapon='skyward'):
-        super().__init__()
+class Noelle(CharacterBase):   
+    def __init__(self, weapon='redhorn'):
         self.name = 'Noelle'
-        self.attrs = {
-            'hp0': np.array([12071]), # hitpoint
-            'atk0': np.array([191]), # attack
-            'df0': np.array([799]), # defence
-            'spd0': np.array([100]), # speed
-            'cr': np.array([5]), # crit rate
-            'cd': np.array([50]), # crit damage
-            'rcg': np.array([100]), # recharge
-            'bns': np.array([0]), # damage bonus
-            'em': np.array([0]), # elemental mastery
-            'res': np.array([10]), # resistance (reduction)
-            'rdf': np.array([0]), # defence (reduction)
-            'H': np.array([0]), # hp percentage
-            'h': np.array([0]), # hp increment
-            'A': np.array([0]), # atk percentage
-            'a': np.array([0]), # atk increment
-            'D': np.array([30]), # def percentage
-            'd': np.array([0]), # def increment
-            'S': np.array([0]), # spd percentage
-            's': np.array([0]), # spd increment
-            'geo': np.array([0]), # geo damage bonus
-            'norm': np.array([0]), # normal/charged damage bonus
+        self.weapon = weapon
+        noelle_base = {
+            'hp0': 12071,
+            'atk0': 191,
+            'df0': 799,
+            'cr': 5,
+            'cd': 50,
+            'rcg': 100,
+            'D': 30,
         }
+        self.attrs = self.construct_attrs(noelle_base)
+        self.mult = {
+            'a1': 156, # favonius bladework maid
+            'a2': 145, 
+            'a3': 171, 
+            'a4': 224, 
+            'breastplate-create': 255, # e release (def)
+            'breastplate-expire': 400, # c4
+            'sweeping-burst': 121, # q release
+            'sweeping-strike': 167, # q sweep attack
+        }
+        self.conversion = 1.35 # 0.85(q13) + 0.5(c6)
         self.requirement = {
-            'thres': 0,
-            'set_restriction': {'marechaussee':4},
-            'alternative': {'husk':4}
+            'set-type': '4pcs',
+            'set-restriction': ['marechaussee', 'husk'],
         }
-        self.weapon = weapon   
+        self.recharge_thres = 130 # do I really need so much recharge?
+        self.redhorn_mult = 0
+        self.skyward_mult = 0
+        self.artifacts = ArtifactCollection([])
         self.apply_weapon()
-        self.apply_resonation()
         # self.apply_team()
-
-    def geo(self):
-        return np.sum(self.attrs['geo'])
     
-    def norm(self):
-        return np.sum(self.attrs['norm'])
-    
-    
+    def sweeping_atk(self):
+        return self.atk() + self.conversion * self.df()
+       
     def apply_weapon(self):
-        if self.weapon == 'skyward':
+        if self.weapon == 'redhorn':
+            self.apply_redhorn()
+        elif self.weapon == 'skyward':
             self.apply_skyward()
         elif self.weapon == 'serpent':
             self.apply_serpent()
-        elif self.weapon == 'redhorn':
-            self.apply_redhorn()
-
-    def apply_skyward(self, refinement=4):
-        self.attrs['atk0'] = np.append(self.attrs['atk0'], 674)
-        self.attrs['rcg'] = np.append(self.attrs['rcg'], 36.8)
-        self.attrs['bns'] = np.append(self.attrs['bns'], 14)
-
-    def apply_serpent(self, refinement=5):
-        self.attrs['atk0'] = np.append(self.attrs['atk0'], 510)
-        self.attrs['cr'] = np.append(self.attrs['cr'], 27.6)
-        self.attrs['bns'] = np.append(self.attrs['bns'], 50)
 
     def apply_redhorn(self):
-        self.attrs['atk0'] = np.append(self.attrs['atk0'], 542)
-        self.attrs['cd'] = np.append(self.attrs['cd'], 88.2)
-        self.attrs['D'] = np.append(self.attrs['D'], 28)
+        self.apply_modifier('atk0', 542)
+        self.apply_modifier('cd', 88.2)
+        self.apply_modifier('D', 28)
+        self.redhorn_mult = 40
+    
+    def apply_skyward(self, refinement=4):
+        self.apply_modifier('atk0', 674)
+        self.apply_modifier('rcg', 36.8)
+        self.apply_modifier('bns', 6+2*refinement)
+        self.skyward_mult = 60+20*refinement
+
+    def apply_serpent(self, refinement=5):
+        self.apply_modifier('atk0', 510)
+        self.apply_modifier('cr', 27.6)
+        self.apply_modifier('bns', 50)
 
     def apply_artifacts(self, artifacts):
         super().apply_artifacts(artifacts)
-        if 'marechaussee' in self.artifacts.set_counts and self.artifacts.set_counts['marechaussee'] >= 2:
-            self.attrs['norm'] = np.append(self.attrs['norm'], 15) # normal/charged bonus
-        if 'marechaussee' in self.artifacts.set_counts and self.artifacts.set_counts['marechaussee'] >= 4:
-            self.attrs['cr'] = np.append(self.attrs['cr'], 36)
-        if 'husk' in self.artifacts.set_counts and self.artifacts.set_counts['husk'] >= 2:
-            self.attrs['D'] = np.append(self.attrs['D'], 30)
-        if 'husk' in self.artifacts.set_counts and self.artifacts.set_counts['husk'] >= 4:
-            self.attrs['D'] = np.append(self.attrs['D'], 24)
-            self.attrs['geo'] = np.append(self.attrs['geo'], 24)
+        if self.artifacts.contains('marechaussee', 2):
+            self.apply_modifier('normal', 15)
+            self.apply_modifier('charged', 15)
+        if self.artifacts.contains('marechaussee', 4):
+            self.apply_modifier('cr', 36)
+        if self.artifacts.contains('husk', 2):
+            self.apply_modifier('D', 30)
+        if self.artifacts.contains('husk', 4):
+            self.apply_modifier('D', 24)
+            self.apply_modifier('geo', 24)
 
     def apply_resonation(self):
-        self.attrs['bns'] = np.append(self.attrs['bns'], 15) # geo resonation
-        self.attrs['res'] = np.append(self.attrs['res'], -20)
+        self.apply_modifier('bns', 15) # geo resonation
+        self.apply_modifier('res', -20)
     
     def reset_team(self):
         super().reset_stats()
         self.apply_weapon()
         self.apply_artifacts(self.artifacts)
-        self.apply_resonation()
 
     def apply_team(self, team=[]):
+        if 'albedo' in team or 'gorou' in team or 'chiori' in team or 'zhongli' in team:
+            self.apply_resonation()
         if 'gorou' in team:
-            self.attrs['d'] = np.append(self.attrs['d'], 438) # skill
-            self.attrs['geo'] = np.append(self.attrs['geo'], 15) # skill         
-            self.attrs['D'] = np.append(self.attrs['D'], 25) # talent
-            self.attrs['cd'] = np.append(self.attrs['cd'], 40) # c6
+            self.apply_modifier('d', 438) # skill
+            self.apply_modifier('geo', 15) # skill
+            self.apply_modifier('D', 25) # talent
+            self.apply_modifier('cd', 40) # c6
         if 'furina' in team:
-            self.attrs['bns'] = np.append(self.attrs['bns'], 100) # fanfare
+            self.apply_modifier('bns', 100) # fanfare
+        if 'zhongli' in team:
+            self.apply_modifier('geo', -20) # skill
         if 'yelan' in team:
-            self.attrs['bns'] = np.append(self.attrs['bns'], 28) # talent
+            self.apply_modifier('bns', 28) # talent
     
-    def optim_target(self, team=['furina', 'albedo', 'chiori'], args=['recharge_thres']):
-        if 'recharge_thres' in args and self.rcg() < 130:
+    
+    def optim_target(self, team=['albedo', 'gorou', 'furina'], args=['recharge_thres']):
+        # returns rotation damage
+
+        if 'recharge_thres' in args and self.rcg() < self.recharge_thres:
             return Composite(), {}
-
-        normal_mult = 156 + 145 + 171 + 224
-        breastplate_mult = 255
-        breastplate_broken_mult = 400
-        sweeping_mult = 143 + 197
-
-        conversion = 0.85 + 0.5
 
         self.apply_team(team)
 
-        normal = calc_damage(normal_mult,
-            self.atk()+conversion*self.df(), self.cr(), self.cd(), self.bns()+self.norm()+self.geo(),
-            self.res(), self.rdf())
+        normal_cumulative, maid_bladework = Composite(), Composite()
+        for action in ['a4', 'a3', 'a2', 'a1']:
+            maid_bladework = calc_damage(
+                self.mult[action],
+                self.sweeping_atk(), self.cr(), self.cd(), self.bns(['geo','normal']),
+                self.res()
+            )
+            normal_cumulative = normal_cumulative + maid_bladework
         
-        breastplate = calc_damage(breastplate_mult+breastplate_broken_mult,
-            self.df(), self.cr(), self.cd(), self.bns()+self.geo(),
-            self.res(), self.rdf())
-        
-        sweeping = calc_damage(sweeping_mult,
-            self.atk()+conversion*self.df(), self.cr(), self.cd(), self.bns()+self.geo(),
-            self.res(), self.rdf())
-        
-        skyward, redhorn = Composite(), Composite()
+        breastplate_create = calc_damage(
+            self.mult['breastplate-create'],
+            self.df(), self.cr(), self.cd(), self.bns(['geo','skill']),
+            self.res()
+        )
+        breastplate_expire = calc_damage(
+            self.mult['breastplate-expire'],
+            self.sweeping_atk(), self.cr(), self.cd(), self.bns(['geo','skill']),
+            self.res()
+        )
 
-        if self.weapon == 'skyward':
-            skyward = calc_damage(140,
-                self.atk()+conversion*self.df(), self.cr(), self.cd(), self.bns()+self.norm(),
-                10, self.rdf())       
-        elif self.weapon == 'redhorn':
-            redhorn = calc_damage(40,
-                self.df(), self.cr(), self.cd(), self.bns()+self.norm(),
-                self.res(), self.rdf()) 
+        sweeping_time = calc_damage(
+            self.mult['sweeping-burst']+self.mult['sweeping-strike'],
+            self.sweeping_atk(), self.cr(), self.cd(), self.bns(['geo','burst']),
+            self.res()
+        )
         
-        feature = normal*4 + breastplate + sweeping + skyward*8 + redhorn*16
-
+        skyward_vacuum_blade, redhorn_extra = Composite(), Composite()
+        if self.weapon == 'redhorn':
+            redhorn_extra = calc_damage(
+                self.redhorn_mult,
+                self.df(), self.cr(), self.cd(), self.bns(['geo','normal']),
+                self.res()
+            )
+        elif self.weapon == 'skyward':
+            skyward_vacuum_blade = calc_damage(
+                self.skyward_mult,
+                self.sweeping_atk(), self.cr(), self.cd(), self.bns(['physical','normal']),
+                self.res()
+            )
+        
+        normal_round = normal_cumulative + redhorn_extra*4
+        normal1 = maid_bladework + redhorn_extra
+        feature = normal_round*5 + breastplate_create + breastplate_expire + sweeping_time + skyward_vacuum_blade*8
+        
         self.reset_team()
 
-        return feature, {'normal4': normal,
-                         'breastplate': breastplate, 
-                         'sweeping': sweeping, 
-                         'skyward': skyward,}
+        return feature, {           
+            'favonius blade maid round': normal_round,
+            'favonius blade maid a1': normal1,
+            'breastplate explode': breastplate_expire,
+            'skyward vacuum blade': skyward_vacuum_blade,
+            }
+    
+    def additional_feature(self, team=['albedo', 'gorou', 'furina'], args=['recharge_thres']):
+        # returns none       
+        return {}

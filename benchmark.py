@@ -34,7 +34,8 @@ class BenchmarkOptimizer():
             'A': 46.6, 'bns': 46.6, 'cd': 62.2,
         }
         if character == 'furina':
-            self.avatar = characters.furina.Furina()
+            characters.furina.Furina.fanfare_sequence = characters.furina.fanfare_simulation()
+            self.avatar = characters.furina.Furina(weapon='tranquil')
             self.effective_stats = {'H': 5.0, 'cr': 3.3, 'cd': 6.6}
             self.primary_stats = {
                 'h': 4780, 'a': 311,
@@ -69,32 +70,46 @@ class BenchmarkOptimizer():
                 alist = copy.deepcopy(self.artifact_list)
                 for item in alist:
                     item.set = s
-                art = ArtifactCollection(alist)
-                avatar = copy.deepcopy(self.avatar)               
-                avatar.apply_artifacts(art)
+                _art = ArtifactCollection(alist)
+                _avatar = copy.deepcopy(self.avatar)               
+                _avatar.apply_artifacts(_art)
                 rcgn = 0
                 if 'recharge_thres' in args:
-                    rcgn = (int)(min(max(avatar.recharge_thres-avatar.rcg(), 0) / 5.5), stats_all-3*stats_incre)
-                    stats_limit = stats_all - rcgn
-                for crits in range(stats_limit+1):
+                    rcgn = (int)(min(np.ceil(max(_avatar.recharge_thres-_avatar.rcg(), 0) / 5.5), stats_all-2*stats_incre))
+                    stats_limit = stats_all - max(0, rcgn-stats_incre) # first 3 recharges for free
+                    rcgn = max(stats_incre, rcgn)
+                for crits in range(stats_limit+1):                   
                     if crits > stats_limit-stats_incre or stats_limit-crits > stats_limit-2*stats_incre:
                         continue
-                    crn, cdn = self.balance_crit(crits, avatar.cr(), avatar.cd(), percd=self.effective_stats['cd'])
+                    for substat in self.effective_stats:
+                        if substat != 'cr' and substat != 'cd':
+                            atk_equiv = substat
+                    crn, cdn = self.balance_crit(crits, _avatar.cr(), _avatar.cd(), percd=self.effective_stats['cd'])
                     atkn = stats_limit - crits # or hpn, dfn
                     substats_attr = {
                         'cr': self.effective_stats['cr'] * crn,
                         'cd': self.effective_stats['cd'] * cdn,
-                        self.effective_stats.keys[0]: self.effective_stats.values[0] * atkn,
+                        atk_equiv: self.effective_stats[atk_equiv] * atkn,
                         'rcg': 5.5 * rcgn,
                     }
+                    art = copy.deepcopy(_art)
                     art.append(Artifact(65535, 'any', 'any', substats_attr))
-                    avatar = copy.deepcopy(self.avatar)               
+                    avatar = copy.deepcopy(self.avatar)                                
                     avatar.apply_artifacts(art)
-                    optim_target, attached = avatar.optim_target(team=self.team, args=self.args)
+                    optim_target, attached = avatar.optim_target()
                     option = BenchmarkOption(avatar, optim_target, attached)
                     options.append(option)
         options = sorted(options, key=sort_key, reverse=True)
         self.options = options
+
+    def print_result(self):
+        print('')
+        print('---------- Benchmark Report ----------')
+        print('')
+        if len(self.options) < 1:
+            print('No option found.')
+            return
+        self.options[0].print()
 
 
 

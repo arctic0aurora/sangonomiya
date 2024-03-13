@@ -18,11 +18,13 @@ import argparse
 def main(args):
     mode = args.mode
     character = args.chara
-
+    # benchmark mode
     if mode == 'benchmark':
         optim = BenchmarkOptimizer(character)
         optim.optimize_benchmark()
-    
+        optim.print_result()
+        return
+    # optimization mode
     if character == 'ayaka':
         ayaka = characters.ayaka.Ayaka(weapon='mistsplitter', cryo_weight=1, frozen_weight=0.5)
         ayaka_path = './artefacts/ayaka'
@@ -43,9 +45,9 @@ def main(args):
         optim.optimize_artifacts(requirement=albedo.requirement)
         optim.print_options(counts=args.option_cnt)
     elif character == 'noelle':
-        noelle = characters.geo.noelle.Noelle(weapon='skyward')
+        noelle = characters.geo.noelle.Noelle(weapon='redhorn')
         noelle_path = './artefacts/geo'
-        optim = Optimizer(noelle, noelle_path, team=['albedo', 'chiori', 'furina'], args=['recharge_thres'])
+        optim = Optimizer(noelle, noelle_path, team=['albedo', 'gorou', 'furina'], args=['recharge_thres'])
         optim.optimize_artifacts(requirement=noelle.requirement)
         optim.print_options(counts=args.option_cnt)
     elif character == 'chiori':

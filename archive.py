@@ -32,6 +32,10 @@ genshin_slots = [
     'flower', 'plume', 'hourglass', 'goblet', 'circlet'
 ]
 
+genshin_substats = [
+    'cr', 'cd', 'rcg', 'em', 'H', 'A', 'D', 'h', 'a', 'd'
+]
+
 starrail_slots = [
     'head', 'hand', 'body', 'feet', 'sphere', 'rope'
 ]
