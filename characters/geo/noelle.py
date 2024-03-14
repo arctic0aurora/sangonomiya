@@ -35,7 +35,7 @@ class Noelle(CharacterBase):
             'set-type': '4pcs',
             'set-restriction': ['marechaussee', 'husk'],
         }
-        self.recharge_thres = 130 # do I really need so much recharge?
+        self.recharge_thres = 125 # do I really need so much recharge?
         self.redhorn_mult = 0
         self.skyward_mult = 0
         self.artifacts = ArtifactCollection([])

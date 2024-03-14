@@ -91,7 +91,14 @@ cd = 14.8
 
 gladiator
 a = 311
-cr = 6.2
-D = 6.6
-rcg = 22.0
+cr = 6.6
+D = 5.8
+rcg = 20.7
 cd = 14.0
+
+marechaussee
+a = 311
+D = 24.1
+rcg = 5.8
+em = 16
+cd = 19.4
