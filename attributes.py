@@ -81,10 +81,10 @@ class CharacterAttrs():
             return self.get_attr('spd0', t=t) * (1+0.01*self.get_attr('S', t=t)) + self.get_attr('s', t=t)
         return 0
 
-    def get_attr_wrapper(self, attr, t=-1):
+    def get_attr_wrapper(self, attr, secondary_attrs=[], t=-1):
         if attr in ['hp', 'atk', 'df', 'spd']:
-            return self.get_attr_complex(attr, t=t)
-        return self.get_attr(attr, t=t)
+            return self.get_attr_complex(attr, t)
+        return self.get_attr(attr, secondary_attrs, t)
 
     def print(self, params=SangonomiyaArchive.genshin_panel):
         print('--- attributes ---')

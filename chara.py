@@ -68,8 +68,8 @@ class CharacterBase():
         self.attrs.construct_list(simple_attrs)
     
     # get wrapper
-    def get(self, attr):
-        return self.attrs.get_attr_wrapper(attr)
+    def get(self, attr, secondary_attrs=[], t=-1):
+        return self.attrs.get_attr_wrapper(attr, secondary_attrs, t)
     
     # append wrapper
     def apply_modifier(self, attr, value, t0=0, t1=65535, name=''):
@@ -99,6 +99,12 @@ class CharacterBase():
         return {}
     
     # misc helper functions
+    def in_team(self, chara, team):
+        for c in team:
+            if chara in c: # for example, furina is true if furina-favonius in team
+                return True
+        return False
+
     def apply_a18_artifacts(self):
         for artifact_set in ['gladiator', 'reminiscence', 'echoes', 'vermillion', 'nighttime']:
             if self.artifacts.contains(artifact_set, 2):

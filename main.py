@@ -28,7 +28,7 @@ def main(args):
     if character == 'ayaka':
         ayaka = characters.ayaka.Ayaka(weapon='mistsplitter', cryo_weight=1, frozen_weight=0.5)
         ayaka_path = './artefacts/ayaka'
-        optim = Optimizer(ayaka, ayaka_path, team=['kazuha', 'kokomi', 'shenhe'], args=['recharge_thres'])
+        optim = Optimizer(ayaka, ayaka_path, team=['kazuha', 'kokomi', 'shenhe-favonius'], args=['recharge_thres'])
         optim.optimize_artifacts(requirement=ayaka.requirement)
         optim.print_options(counts=args.option_cnt)
     elif character == 'furina':

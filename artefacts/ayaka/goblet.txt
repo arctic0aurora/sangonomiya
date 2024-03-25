@@ -1,68 +1,68 @@
 blizzard
-bns = 46.6
+cryo = 46.6
 a = 19
 cr = 8.9
 rcg = 16.8
 em = 21
 
 blizzard
-bns = 46.6
+cryo = 46.6
 cr = 11.3
 cd = 6.2
 a = 33
 D = 11.7
 
 blizzard
-bns = 46.6
+cryo = 46.6
 d = 67
 cd = 7.8
 rcg = 12.3
 cr = 5.8
 
 paradise
-bns = 46.6
+cryo = 46.6
 A = 5.8
 cr = 13.2
 cd = 13.2
 h = 209
 
 troupe
-bns = 46.6
+cryo = 46.6
 a = 51
 cd = 10.9
 em = 21
 cr = 7.0
 
 gladiator
-bns = 46.6
+cryo = 46.6
 rcg = 18.8
 H = 5.8
 cd = 19.4
 d = 37
 
 goldentroupe
-bns = 46.6
+cryo = 46.6
 cd = 26.4
 d = 16
 H = 9.9
 em = 37
 
 echoes
-bns = 46.6
+cryo = 46.6
 D = 10.2
 rcg = 9.1
 cr = 6.6
 cd = 15.5
 
 emblem
-bns = 46.6
+cryo = 46.6
 a = 58
 h = 209
 A = 5.3
 cd = 20.2
 
 noblesse
-bns = 46.6
+cryo = 46.6
 a = 18
 cd = 25.7
 H = 11.7

@@ -14,7 +14,7 @@ class Option():
         self.feature = feature
         self.attached = attached_feature
 
-    def print(self, print_additional=True):
+    def print(self, print_additional=True, panel_level=0):
         print('sort key: {}'.format(self.feature))
         for desc, feat in self.attached.items():
             print('{}: {}'.format(desc, feat))
@@ -23,7 +23,7 @@ class Option():
             for desc, feat in additional.items():
                 print('{}: {}'.format(desc, feat))
         print('')       
-        self.avatar.get_panel().print()
+        self.avatar.snapshot().print(panel_level)
         self.artifacts.print()
         
 
@@ -104,7 +104,7 @@ class Optimizer():
 
     def print_options(self, counts=10):
         print('')
-        print('---------- Optimization Report ----------')
+        print('---------- optimization report ----------')
         print('# options beyond threshold = {}'.format(len(self.options)))
         for i in range(counts):
             if i >= len(self.options):
