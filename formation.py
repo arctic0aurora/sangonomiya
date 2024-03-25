@@ -12,7 +12,10 @@ class Composite:
     
     # calculations
     def __add__(self, a):
-        return Composite(self.exp+a.exp, self.ncrit+a.ncrit, self.crit+a.crit)
+        if isinstance(a, Composite):
+            return Composite(self.exp+a.exp, self.ncrit+a.ncrit, self.crit+a.crit)
+        else:
+            return Composite(self.exp+a, self.ncrit+a, self.crit+a)
     
     def __iadd__(self, num):
         return Composite(self.exp+num, self.ncrit+num, self.crit+num)
@@ -24,7 +27,7 @@ class Composite:
         return Composite(self.exp*num, self.ncrit*num, self.crit*num)
 
     def __str__(self):
-        return "Exp: {:.1f}, Crit: {:.1f}, NonCrit: {:.1f}".format(self.exp, self.crit, self.ncrit)
+        return "(exp: {:.1f}, crit: {:.1f}, non-crit: {:.1f})".format(self.exp, self.crit, self.ncrit)
 
     # lesser than
     def __lt__(self, a):

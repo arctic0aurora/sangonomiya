@@ -51,7 +51,7 @@ class BenchmarkOptimizer():
         self.artifact_list = []
         artifact_id = 0
         for primary_stat in self.primary_stats:
-            self.artifact_list.append(Artifact(artifact_id, genshin_slots[artifact_id], 'any', {primary_stat: self.primary_stats[primary_stat]}))
+            self.artifact_list.append(Artifact(artifact_id, SangonomiyaArchive.genshin_slots[artifact_id], 'any', {primary_stat: self.primary_stats[primary_stat]}))
             artifact_id = artifact_id + 1
         self.options = []
 
@@ -61,7 +61,7 @@ class BenchmarkOptimizer():
         cd_stats = stat_limit - cr_stats
         return (int)(cr_stats), (int)(cd_stats)
 
-    def optimize_benchmark(self, sort_key=default_sort_key, stats_base=27, stats_incre=3, args=['recharge_thres']):
+    def optimize_benchmark(self, sort_key=SangonomiyaArchive.default_sort_key, stats_base=27, stats_incre=3, args=['recharge_thres']):
         assert (len(self.effective_stats) == 3 and 'cd' in self.effective_stats) # not finished otherwise
         options = []
         stats_all = stats_base + stats_incre * (len(self.effective_stats)-3)

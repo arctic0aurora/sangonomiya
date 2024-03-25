@@ -14,8 +14,7 @@ class Artifact():
         print(self.uid)
         print('{} of set {}'.format(self.slot, self.set))
         for key, value in self.attrs.items():
-            if key in attribute_names:
-                print('{}: {:.1f}'.format(attribute_names[key], value))
+            print('{}: {:.1f}'.format(SangonomiyaArchive.attr_name.get(key, key), value))
 
 
 class ArtifactCollection():
@@ -54,7 +53,7 @@ class ArtifactCollection():
 
 
 class ArtifactInventory():
-    def __init__(self, slots=genshin_slots, data_path='./artefacts/general'):
+    def __init__(self, slots=SangonomiyaArchive.genshin_slots, data_path='./artefacts/general'):
         self.id = 0
         self.path = data_path
         self.artifacts = {}
@@ -79,7 +78,6 @@ class ArtifactInventory():
         for slot in self.artifacts:
             file_path = self.path + './{}.txt'.format(slot)
             self.read_artifacts_from_file(file_path, slot)
-
 
 
 if __name__ == '__main__':

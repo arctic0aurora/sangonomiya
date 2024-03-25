@@ -35,7 +35,7 @@ class Optimizer():
         self.args = args
         self.options = []
 
-    def optimize_artifacts(self, requirement={}, sort_key=default_sort_key):        
+    def optimize_artifacts(self, requirement={}, sort_key=SangonomiyaArchive.default_sort_key):        
         set_counts = {}
         options = []
         search_space = 0
