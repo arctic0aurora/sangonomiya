@@ -1,6 +1,7 @@
 from archive import *
 from chara import *
 from artifact import *
+from attributes import *
 from formation import *
 from optim import *
 

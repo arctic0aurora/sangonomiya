@@ -14,7 +14,7 @@ class Option():
         self.feature = feature
         self.attached = attached_feature
 
-    def print(self, print_additional=True, panel_level=0):
+    def print(self, print_additional=True, print_team=True, print_level=0):
         print('sort key: {}'.format(self.feature))
         for desc, feat in self.attached.items():
             print('{}: {}'.format(desc, feat))
@@ -22,9 +22,16 @@ class Option():
             additional = self.avatar.additional_feature(self.team, self.args)
             for desc, feat in additional.items():
                 print('{}: {}'.format(desc, feat))
-        print('')       
-        self.avatar.snapshot().print(panel_level)
-        self.artifacts.print()
+        print('')
+        self.avatar.snapshot().print(0)
+        print('')
+        self.artifacts.print()  
+        if print_team:
+            print('\n--- (with full modifiers) ---\n')
+            self.avatar.apply_team(self.team)
+            self.avatar.snapshot().print(print_level)
+            self.avatar.reset_team()
+        
         
 
 class Optimizer():
@@ -105,12 +112,12 @@ class Optimizer():
     def print_options(self, counts=10):
         print('')
         print('---------- optimization report ----------')
-        print('# options beyond threshold = {}'.format(len(self.options)))
+        print('# options beyond threshold = {}\n'.format(len(self.options)))
         for i in range(counts):
             if i >= len(self.options):
                 break
-            print('')
             print('#{} option --------------------'.format(i+1))
             self.options[i].print()
+            print('')
 
 

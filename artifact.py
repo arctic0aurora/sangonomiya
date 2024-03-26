@@ -44,7 +44,7 @@ class ArtifactCollection():
         return attrs
     
     def print(self):
-        print('Artifacts:')
+        print('--- artifacts ---')
         for artifact_set, count in self.set_counts.items():
             print('{}: {}'.format(artifact_set, count))
         for artifact in self.alist:

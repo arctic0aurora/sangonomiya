@@ -31,6 +31,8 @@ class TimedAttr():
         return TimedAttr(self.value * num)
 
     def __str__(self):
+        if self.t1 > 65535-1:
+            return "{}({:.1f})".format(self.name, self.value)
         return "{}({:.1f}, from {:.1f} to {:.1f})".format(self.name, self.value, self.t0, self.t1)
 
     # lesser than
@@ -98,7 +100,7 @@ class CharacterAttrs():
     
     def print_all(self, params=SangonomiyaArchive.genshin_panel):
         self.print(params)
-        print('--- detailed information ---')
+        print('\n--- detailed information ---')
         for attr in self.ls:
             value = self.get_attr_wrapper(attr)
             if value != 0:
@@ -106,7 +108,7 @@ class CharacterAttrs():
                     if i == 0:
                         print('[{}] {}'.format(SangonomiyaArchive.attr_name.get(attr, attr), item))
                     else:
-                        print('  {}'.format(item))
+                        print('+ {}'.format(item))
 
 
 

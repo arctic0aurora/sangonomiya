@@ -62,5 +62,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Sangonomiya')
     parser.add_argument('--mode', type=str, default='optim', help='mode')
     parser.add_argument('--chara', type=str, default='ayaka', help='character')
-    parser.add_argument('--option-cnt', type=int, default=5, help='optimal options')
+    parser.add_argument('--option-cnt', type=int, default=3, help='optimal options')
     main(parser.parse_args())

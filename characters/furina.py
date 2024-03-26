@@ -1,6 +1,7 @@
 from archive import *
 from chara import *
 from artifact import *
+from attributes import *
 from formation import *
 from optim import *
 
@@ -74,6 +75,8 @@ class Furina(CharacterBase):
 
     def __init__(self, weapon='jade', rejoice_weight=0.8, duckweed_weight=0.5):
         self.name = 'Furina'
+        self.attrs = CharacterAttrs()
+        self.artifacts = ArtifactCollection([])
         self.weapon = weapon
         self.rejoice_weight = rejoice_weight
         self.duckweed_weight = duckweed_weight
@@ -86,7 +89,7 @@ class Furina(CharacterBase):
             'rcg': 100,
             'em': 0,
         }
-        self.attrs = self.construct_attrs(furina_base)
+        self.construct_attrs(furina_base)
         self.mult = {
             'solitaire-bubble': 14.2, # ousia e release
             'small': 5.82, # surintendante chevalmarin
@@ -101,15 +104,13 @@ class Furina(CharacterBase):
             'set-restriction': ['goldentroupe'],
         }
         self.recharge_thres = 155 # randomly set in favor of recharge hourglass
-        self.artifacts = ArtifactCollection([])
         self.apply_weapon()
-        # self.apply_team()
 
     # furina talent2
     def confession_bonus(self, fanfare=0):
         if fanfare <= 400:
             return min(28, (self.hp()) * 0.7/1000)
-        return min(28, (self.hp()+self.fanfare_hp(fanfare)) * 0.7/1000)
+        return min(28, (self.get('hp')+self.fanfare_hp(fanfare)) * 0.7/1000)
     
     # fanfare to buff
     def fanfare_bonus(self, fanfare):
@@ -119,7 +120,7 @@ class Furina(CharacterBase):
         return max(0, 0.35 * (min(fanfare, 800) - 400))
     
     def fanfare_hp(self, fanfare):
-        return 0.01 * self.fanfare_hp_percent(fanfare) * self.attrs['hp0'][0]
+        return 0.01 * self.fanfare_hp_percent(fanfare) * self.get('hp0')
     
     def apply_weapon(self):
         if self.weapon == 'tranquil':

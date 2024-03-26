@@ -91,6 +91,13 @@ class CharacterBase():
     def snapshot(self):
         return CharacterPanel(self.name, self.attrs)
     
+    # team
+    def apply_team(self, team):
+        pass
+
+    def reset_team(self):
+        pass
+    
     # calculations
     def optim_target(self, team, args):
         return Composite(), {}
