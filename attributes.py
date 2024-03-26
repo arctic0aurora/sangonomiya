@@ -18,6 +18,9 @@ class TimedAttr():
         else:
             return TimedAttr(self.value + a)
     
+    def __radd__(self, a):
+        return a + self.value
+    
     def __iadd__(self, num):
         return TimedAttr(self.value + num)
 
@@ -64,10 +67,10 @@ class CharacterAttrs():
         return [item for item in self.ls[attr] if item.range_contains(t)]
     
     def get_attr(self, primary_attr, secondary_attrs=[], t=-1):
-        primus = sum(self.filter_attr(primary_attr), TimedAttr(0)).value
+        primus = sum(self.filter_attr(primary_attr), 0)
         secondus = 0
         for attr in secondary_attrs:
-            secondus += sum(self.filter_attr(attr), TimedAttr(0)).value
+            secondus += sum(self.filter_attr(attr), 0)
         return primus + secondus
     
     def get_attr_complex(self, attr, t=-1):
