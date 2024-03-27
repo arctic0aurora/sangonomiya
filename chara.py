@@ -106,10 +106,16 @@ class CharacterBase():
         return {}
     
     # misc helper functions
-    def in_team(self, chara, team):
-        for c in team:
-            if chara in c: # for example, furina is true if furina-favonius in team
-                return True
+    def in_team(self, team, chara=None, ors=[]):
+        if chara is not None:
+            for c in team:
+                if chara in c: # for example, furina is true if furina-favonius in team
+                    return True
+        elif len(ors) > 0:
+            for or_chara in ors:
+                for c in team:
+                    if or_chara in c:
+                        return True
         return False
 
     def apply_a18_artifacts(self):

@@ -57,7 +57,7 @@ def fanfare_simulation(print_sequence=True):
     # medium 7 (1, 2, 4)
     # large 4 (1, 1, 2)
     if print_sequence:
-        print('fanfare axis in 1800 frames (18.0s)')
+        print('\n--- fanfare axis in 1800 frames (18.0s) ---')
         cnts = {'small':0, 'medium':0, 'large':0}
         for action in sequence:
             cnts[action['type']] += 1
@@ -109,7 +109,7 @@ class Furina(CharacterBase):
     # furina talent2
     def confession_bonus(self, fanfare=0):
         if fanfare <= 400:
-            return min(28, (self.hp()) * 0.7/1000)
+            return min(28, (self.get('hp')) * 0.7/1000)
         return min(28, (self.get('hp')+self.fanfare_hp(fanfare)) * 0.7/1000)
     
     # fanfare to buff
@@ -133,76 +133,75 @@ class Furina(CharacterBase):
             self.apply_favonius()
     
     def apply_tranquil(self):
-        self.apply_modifier('atk0', 542)
-        self.apply_modifier('cd', 88.2)
-        self.apply_modifier('H', 28)
-        self.apply_modifier('skill', 24)
+        self.apply_modifier('atk0', 542, name='tranquil')
+        self.apply_modifier('cd', 88.2, name='tranquil')
+        self.apply_modifier('H', 28, name='tranquil')
+        self.apply_modifier('skill', 24, name='tranquil')
 
     def apply_misugiri(self, geo=False):
-        self.apply_modifier('atk0', 542)
-        self.apply_modifier('cd', 88.2)
-        self.apply_modifier('normal', 16)
-        self.apply_modifier('skill', 24)
-        self.apply_modifier('D', 20)
+        self.apply_modifier('atk0', 542, name='misugiri')
+        self.apply_modifier('cd', 88.2, name='misugiri')
+        self.apply_modifier('normal', 16, name='misugiri')
+        self.apply_modifier('skill', 24, name='misugiri')
+        self.apply_modifier('D', 20, name='misugiri')
         if geo:
-            self.apply_modifier('skill', 24)
+            self.apply_modifier('skill', 24, name='misugiri-geo')
 
     def apply_primodial_jade(self):
-        self.apply_modifier('atk0', 542)
-        self.apply_modifier('cr', 44.1)
-        self.apply_modifier('H', 20)
+        self.apply_modifier('atk0', 542, name='primodial-jade')
+        self.apply_modifier('cr', 44.1, name='primodial-jade')
+        self.apply_modifier('H', 20, name='primodial-jade')
     
     def jade_atk(self):
-        return (0.012 * self.hp())
+        return (0.012 * self.get('hp'))
 
     def apply_favonius(self):
-        self.apply_modifier('atk0', 454)
-        self.apply_modifier('rcg', 61.3)
+        self.apply_modifier('atk0', 454, name='favonius')
+        self.apply_modifier('rcg', 61.3, name='favonius')
 
     def apply_artifacts(self, artifacts):
         super().apply_artifacts(artifacts)
         if self.artifacts.contains('goldentroupe', 2):
-            self.apply_modifier('skill', 25)
+            self.apply_modifier('skill', 25, name='golden-troupe2')
         if self.artifacts.contains('goldentroupe', 4):
-            self.apply_modifier('skill', 50)
+            self.apply_modifier('skill', 50, name='golden-troupe4')
         if self.artifacts.contains('emblem', 2):
-            self.apply_modifier('rcg', 20)
+            self.apply_modifier('rcg', 20, name='emblem2')
         self.apply_h20_artifacts()
         for artifact_set in ['depth', 'nymph']:
             if self.artifacts.contains(artifact_set, 2):
-                self.apply_modifier('hydro', 15)
+                self.apply_modifier('hydro', 15, name='hydro15-set2')
 
     def apply_hydro_resonation(self):
-        self.apply_modifier('H', 25)
+        self.apply_modifier('H', 25, name='hydro-resonation')
     
     def reset_team(self):
-        super().reset_stats()
+        super().reset_attrs()
         self.apply_weapon()
         self.apply_artifacts(self.artifacts)
 
     def apply_team(self, team=[]):
-        if 'kokomi' in team or 'yelan' in team or 'xingqiu' in team:
+        if self.in_team(team, ors=['kokomi', 'yelan', 'xingqiu', 'ayato']):
             self.apply_hydro_resonation()
-        if 'kazuha' in team:
-            self.apply_modifier('A', 20) # freedom-sworn 
-            self.apply_modifier('normal', 16) # freedom-sworn
-            self.apply_modifier('charged', 16) # freedom-sworn
-            self.apply_modifier('plunge', 16) # freedom-sworn            
-            self.apply_modifier('res', -40) # viridescent4
-            self.apply_modifier('hydro', 42) # talent
-        if 'lynette' in team or 'jean' in team:          
-            self.apply_modifier('res', -40) # viridescent4
-        if 'yelan' in team:
-            # self.apply_modifier('bns', 28) # talent
-            self.apply_modifier('bns', 0) # no buff for off-field
-        if 'xingqiu' in team:
-            self.apply_modifier('res', -15) # c2
+        if self.in_team(team, 'kazuha'):
+            self.apply_modifier('A', 20, name='freedom-sworn')
+            self.apply_modifier('normal', 16, name='freedom-sworn')
+            self.apply_modifier('charged', 16, name='freedom-sworn')
+            self.apply_modifier('plunge', 16, name='freedom-sworn')       
+            self.apply_modifier('hydro', 42, name='kazuha-talent2')
+        if self.in_team(team, ors=['kazuha', 'lynette', 'jean', 'xianyun']):          
+            self.apply_modifier('res', -40, name='viridescent4')
+        if self.in_team(team, 'yelan'):
+            # self.apply_modifier('bns', 28, name='yelan-talent2')
+            self.apply_modifier('bns', 0, name='yelan-talent2') # no buff for off-field
+        if self.in_team(team, 'xingqiu'):
+            self.apply_modifier('res', -15, name='xingqiu-c2')
 
 
     def optim_target(self, team=['kazuha', 'kokomi', 'yelan'], args=['recharge_thres']):
         # returns mademoiselle crabaletta damage as feature
 
-        if 'recharge_thres' in args and self.rcg() < self.recharge_thres:
+        if 'recharge_thres' in args and self.get('rcg') < self.recharge_thres:
             return Composite(), {}
         
         self.apply_team(team)
@@ -210,20 +209,20 @@ class Furina(CharacterBase):
         # mademoiselle crabaletta
         large_initial = calc_damage(
             self.mult['large'],
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
-            self.res()
+            self.get('hp'), self.get('cr'), self.get('cd'), self.get('bns', ['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+            self.get('res')
         )
         
         large_rejoice = calc_damage(
             self.mult['large'],
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
-            self.res()
+            self.get('hp'), self.get('cr'), self.get('cd'), self.get('bns', ['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
+            self.get('res')
         )
         
         large_duckweed = calc_damage(
             self.mult['large'],
-            self.hp()+self.fanfare_hp(800), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
-            self.res()
+            self.get('hp')+self.fanfare_hp(800), self.get('cr'), self.get('cd'), self.get('bns', ['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
+            self.get('res')
         )
         
         feature = large_duckweed*self.duckweed_weight + large_rejoice*(self.rejoice_weight-self.duckweed_weight) + large_initial*(1-self.rejoice_weight)
@@ -241,42 +240,42 @@ class Furina(CharacterBase):
         # elemental burst
         rejoice = calc_damage(
             self.mult['rejoice'],
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','burst'])+self.fanfare_bonus(100)+self.confession_bonus(100),
-            self.res()
+            self.get('hp'), self.get('cr'), self.get('cd'), self.get('bns', ['hydro','burst'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+            self.get('res')
         )
         
         # elemental skill release
         bubble = calc_damage(
             self.mult['solitaire-bubble'],
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
-            self.res()
+            self.get('hp'), self.get('cr'), self.get('cd'), self.get('bns', ['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+            self.get('res')
         )
         
         # calculate 3 summons with unit damage
         unit_initial = calc_damage(
             1,
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
-            self.res()
+            self.get('hp'), self.get('cr'), self.get('cd'), self.get('bns', ['hydro','skill'])+self.fanfare_bonus(100)+self.confession_bonus(100),
+            self.get('res')
         )
         
         unit_rejoice = calc_damage(
             1,
-            self.hp(), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
-            self.res()
+            self.get('hp'), self.get('cr'), self.get('cd'), self.get('bns', ['hydro','skill'])+self.fanfare_bonus(400)+self.confession_bonus(400),
+            self.get('res')
         )
         
         unit_duckweed = calc_damage(
             1,
-            self.hp()+self.fanfare_hp(800), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
-            self.res()
+            self.get('hp')+self.fanfare_hp(800), self.get('cr'), self.get('cd'), self.get('bns', ['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
+            self.get('res')
         )
 
         salon_cumulative = Composite()
         for action in Furina.fanfare_sequence:
             action_result = calc_damage(
                 self.mult[action['type']],
-                self.hp()+self.fanfare_hp(action['fanfare']), self.cr(), self.cd(), self.bns(['hydro','skill'])+self.fanfare_bonus(action['fanfare'])+self.confession_bonus(action['fanfare']),
-                self.res()
+                self.get('hp')+self.fanfare_hp(action['fanfare']), self.get('cr'), self.get('cd'), self.get('bns', ['hydro','skill'])+self.fanfare_bonus(action['fanfare'])+self.confession_bonus(action['fanfare']),
+                self.get('res')
             )
             salon_cumulative = salon_cumulative + action_result
         

@@ -30,37 +30,38 @@ def main(args):
         ayaka_path = './artefacts/ayaka'
         optim = Optimizer(ayaka, ayaka_path, team=['kazuha', 'kokomi', 'shenhe-favonius'], args=['recharge_thres'])
         optim.optimize_artifacts(requirement=ayaka.requirement)
-        optim.print_options(counts=args.option_cnt)
+        optim.print_options(counts=args.option_cnt, print_level=args.print_level)
     elif character == 'furina':
         characters.furina.Furina.fanfare_sequence = characters.furina.fanfare_simulation()
-        furina = characters.furina.Furina(weapon='misugiri', rejoice_weight=0.8, duckweed_weight=0.5)
+        furina = characters.furina.Furina(weapon='tranquil', rejoice_weight=0.8, duckweed_weight=0.5)
         furina_path = './artefacts/furina'
         optim = Optimizer(furina, furina_path, team=['kazuha', 'kokomi', 'yelan'], args=['recharge_thres'])
         optim.optimize_artifacts(requirement=furina.requirement)
-        optim.print_options(counts=args.option_cnt)
+        optim.print_options(counts=args.option_cnt, print_level=args.print_level)
     elif character == 'albedo':
         albedo = characters.geo.albedo.Albedo(weapon='spindle')
         albedo_path = './artefacts/geo'
         optim = Optimizer(albedo, albedo_path, team=['noelle', 'chiori', 'furina'], args=['recharge_thres'])
         optim.optimize_artifacts(requirement=albedo.requirement)
-        optim.print_options(counts=args.option_cnt)
+        optim.print_options(counts=args.option_cnt, print_level=args.print_level)
     elif character == 'noelle':
         noelle = characters.geo.noelle.Noelle(weapon='redhorn')
         noelle_path = './artefacts/geo'
         optim = Optimizer(noelle, noelle_path, team=['albedo', 'gorou', 'furina'], args=['recharge_thres'])
         optim.optimize_artifacts(requirement=noelle.requirement)
-        optim.print_options(counts=args.option_cnt)
+        optim.print_options(counts=args.option_cnt, print_level=args.print_level)
     elif character == 'chiori':
         chiori = characters.geo.chiori.Chiori(weapon='misugiri')
         chiori_path = './artefacts/geo'
         optim = Optimizer(chiori, chiori_path, team=['noelle', 'gorou', 'furina'], args=['recharge_thres'])
         optim.optimize_artifacts(requirement=chiori.requirement)
-        optim.print_options(counts=args.option_cnt)
+        optim.print_options(counts=args.option_cnt, print_level=args.print_level)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Sangonomiya')
     parser.add_argument('--mode', type=str, default='optim', help='mode')
     parser.add_argument('--chara', type=str, default='ayaka', help='character')
-    parser.add_argument('--option-cnt', type=int, default=3, help='optimal options')
+    parser.add_argument('--option-cnt', type=int, default=3, help='options num')
+    parser.add_argument('--print-level', type=int, default=0, help='print level')
     main(parser.parse_args())

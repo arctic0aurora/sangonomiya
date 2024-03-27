@@ -81,29 +81,29 @@ class Ayaka(CharacterBase):
         self.apply_artifacts(self.artifacts)
 
     def apply_team(self, team):
-        if self.in_team('shenhe', team) or self.in_team('ganyu', team):
+        if self.in_team(team, ors=['shenhe', 'ganyu', 'layla']):
             self.apply_cryo_resonation()
-        if self.in_team('kazuha', team):
+        if self.in_team(team, 'kazuha'):
             self.apply_modifier('A', 20, name='freedom-sworn')
             self.apply_modifier('normal', 16, name='freedom-sworn')
             self.apply_modifier('charged', 16, name='freedom-sworn')
             self.apply_modifier('plunge', 16, name='freedom-sworn')
             self.apply_modifier('res', -40, name='viridescent4')
             self.apply_modifier('cryo', 42, name='kazuha-talent2')
-        if self.in_team('kokomi', team):
+        if self.in_team(team, 'kokomi'):
             self.apply_modifier('A', 48, name='thrilling-tales')
             self.apply_modifier('A', 20, name='millelith4')
-        if self.in_team('shenhe', team):
+        if self.in_team(team, 'shenhe'):
             self.apply_modifier('A', 20, name='noblesse4')
             self.apply_modifier('res', -15, name='shenhe-burst')
             self.apply_modifier('cryo', 15, name='shenhe-talent1')
             self.apply_modifier('bns', 15, name='shenhe-talent2-merged')
-        if self.in_team('shenhe-favonius', team):
+        if self.in_team(team, 'shenhe-favonius'):
             self.apply_modifier('quill', 2513, name='shenhe-quill-favonius')
             # self.get('quill') = 2513 # favonius
-        if self.in_team('ganyu', team):
+        if self.in_team(team, 'ganyu'):
             self.apply_modifier('cryo', 20, name='ganyu-talent2')
-        if self.in_team('zhongli', team):
+        if self.in_team(team, 'zhongli'):
             self.apply_modifier('A', 20, name='millelith4')
             self.apply_modifier('res', -20, name='zhongli-skill')
     

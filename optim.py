@@ -5,6 +5,7 @@ from formation import *
 
 import copy
 
+
 class Option():
     def __init__(self, character, artifacts:ArtifactCollection, team, args, feature:Composite, attached_feature={}):
         self.avatar = character
@@ -33,7 +34,6 @@ class Option():
             self.avatar.reset_team()
         
         
-
 class Optimizer():
     def __init__(self, character, path, team=[], args=[]):
         self.avatar = character
@@ -108,16 +108,14 @@ class Optimizer():
                         return True
         return False
         
-
-    def print_options(self, counts=10):
-        print('')
-        print('---------- optimization report ----------')
+    def print_options(self, counts=10, print_level=0):
+        print('\n---------- optimization report ----------')
         print('# options beyond threshold = {}\n'.format(len(self.options)))
         for i in range(counts):
             if i >= len(self.options):
                 break
             print('#{} option --------------------'.format(i+1))
-            self.options[i].print()
+            self.options[i].print(print_level=print_level)
             print('')
 
 
