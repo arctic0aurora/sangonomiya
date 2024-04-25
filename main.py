@@ -5,11 +5,11 @@ from formation import *
 from optim import *
 from benchmark import *
 
-import characters.ayaka
-import characters.furina
-import characters.geo.noelle
-import characters.geo.chiori
-import characters.geo.albedo
+import characters.ayaka as ayaka
+import characters.furina as furina
+import characters.geo.noelle as noelle
+import characters.geo.chiori as chiori
+import characters.geo.albedo as albedo
 
 import numpy as np
 import argparse
@@ -26,36 +26,33 @@ def main(args):
         return
     # optimization mode
     if character == 'ayaka':
-        ayaka = characters.ayaka.Ayaka(weapon='mistsplitter', cryo_weight=1, frozen_weight=0.5)
+        _ayaka = ayaka.Ayaka(weapon='mistsplitter', cryo_weight=1, frozen_weight=0.5)
         ayaka_path = './artefacts/ayaka'
-        optim = Optimizer(ayaka, ayaka_path, team=['kazuha', 'kokomi', 'shenhe-favonius'], args=['recharge_thres'])
-        optim.optimize_artifacts(requirement=ayaka.requirement)
-        optim.print_options(counts=args.option_cnt, print_level=args.print_level)
+        optim = Optimizer(_ayaka, ayaka_path, team=['kazuha', 'kokomi', 'shenhe-favonius'], args=['recharge_thres'])
+        optim.optimize_artifacts(requirement=_ayaka.requirement)
     elif character == 'furina':
-        characters.furina.Furina.fanfare_sequence = characters.furina.fanfare_simulation()
-        furina = characters.furina.Furina(weapon='tranquil', rejoice_weight=0.8, duckweed_weight=0.5)
+        furina.Furina.fanfare_sequence = furina.fanfare_simulation()
+        _furina = furina.Furina(weapon='jade', rejoice_weight=0.8, duckweed_weight=0.5)
         furina_path = './artefacts/furina'
-        optim = Optimizer(furina, furina_path, team=['kazuha', 'kokomi', 'yelan'], args=['recharge_thres'])
-        optim.optimize_artifacts(requirement=furina.requirement)
-        optim.print_options(counts=args.option_cnt, print_level=args.print_level)
+        optim = Optimizer(_furina, furina_path, team=['kazuha', 'kokomi', 'yelan'], args=['recharge_thres'])
+        optim.optimize_artifacts(requirement=_furina.requirement)
     elif character == 'albedo':
-        albedo = characters.geo.albedo.Albedo(weapon='spindle')
+        _albedo = albedo.Albedo(weapon='spindle')
         albedo_path = './artefacts/geo'
-        optim = Optimizer(albedo, albedo_path, team=['noelle', 'chiori', 'furina'], args=['recharge_thres'])
-        optim.optimize_artifacts(requirement=albedo.requirement)
-        optim.print_options(counts=args.option_cnt, print_level=args.print_level)
+        optim = Optimizer(_albedo, albedo_path, team=['noelle', 'chiori', 'furina'], args=['recharge_thres'])
+        optim.optimize_artifacts(requirement=_albedo.requirement)
     elif character == 'noelle':
-        noelle = characters.geo.noelle.Noelle(weapon='redhorn')
+        _noelle = noelle.Noelle(weapon='redhorn')
         noelle_path = './artefacts/geo'
-        optim = Optimizer(noelle, noelle_path, team=['albedo', 'gorou', 'furina'], args=['recharge_thres'])
-        optim.optimize_artifacts(requirement=noelle.requirement)
-        optim.print_options(counts=args.option_cnt, print_level=args.print_level)
+        optim = Optimizer(_noelle, noelle_path, team=['albedo', 'gorou', 'furina'], args=['recharge_thres'])
+        optim.optimize_artifacts(requirement=_noelle.requirement)
     elif character == 'chiori':
-        chiori = characters.geo.chiori.Chiori(weapon='misugiri')
+        _chiori = chiori.Chiori(weapon='misugiri')
         chiori_path = './artefacts/geo'
-        optim = Optimizer(chiori, chiori_path, team=['noelle', 'gorou', 'furina'], args=['recharge_thres'])
-        optim.optimize_artifacts(requirement=chiori.requirement)
-        optim.print_options(counts=args.option_cnt, print_level=args.print_level)
+        optim = Optimizer(_chiori, chiori_path, team=['noelle', 'gorou', 'furina'], args=['recharge_thres'])
+        optim.optimize_artifacts(requirement=_chiori.requirement)
+    # print info
+    optim.print_options(counts=args.option_cnt, print_level=args.print_level)
 
 
 if __name__ == '__main__':

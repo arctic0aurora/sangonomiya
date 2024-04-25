@@ -8,96 +8,87 @@ from optim import *
 import numpy as np
 
 # generate bond of life axis in a rotation
-def bond_simulation(atks=18, vapor_rate=1.0, print_sequence=True):
+def bond_simulation(axis='e-q1-e-z0-a4-a4-a4-a4', vapor_rate=1.0, print_sequence=True):
     # assumption: bond is counted after attack
-    # axis: e(0)...z(7)q(8)a(10)aa
-    sequence_default = []
-    sequence_crimson = []
-    sequence_default1 = []
-    sequence_crimson1 = []
-    decay_rate = 5.5
-    decree_clear = 70 # charged
-    wing_dance = 15 # burst
-    crimson_moon = 25 # signature weapon
+    seq = [] 
+    bond_dft, bond_crm = 0, 0 # default, crimson
+    decay_rate = 6.5
+    decree_flag, crimson_flag = False, True
+    decree_clear_instant = 40
+    decree_clear_wait = 70
+    decree_clear_full = 80
+    crimson_moon = 18 # signature weapon
 
-    hits = ['a1', 'a2', 'a3', 'a4', 'a5', 'a6']
-    pyro_list = ['a1', 'a4', 'a6']
+    hits = ['a1', 'a2', 'a3', 'a41', 'a42', 'a5', 'a6']
+    pyro_list = ['a1', 'a41', 'a6']
     if vapor_rate < 0.7:
-        pyro_list = ['a4', 'a6']
+        pyro_list = ['a41', 'a6']
     if vapor_rate < 0.4:
         pyro_list = ['a6']
     if vapor_rate < 0.1:
         pyro_list = []
-    c1_list = ['a3', 'a6']
+   
+    actions = axis.split('-')
 
-    bond_dft, bond_crm, bond_dft1, bond_crm1 = 0, 0, 0, 0
-    bond_dft = decree_clear + wing_dance
-    bond_crm = decree_clear + wing_dance + crimson_moon
-    bond_dft1 = decree_clear + wing_dance
-    bond_crm1 = decree_clear + wing_dance + crimson_moon
-    pyro_counter = 0
-    for i in range(1, atks+1):
-        pyro_flag = False
-        #if pyro_counter == 0:
-        #    pyro_flag = True
-        #pyro_counter = (pyro_counter+1) % 3
-        #if (i % 6 == 4):
-            # a4 has 2 hits
-        #    if pyro_counter == 0:
-        #        pyro_flag = True # no ambiguity because only one of 2 hits can be pyro
-        #    pyro_counter = (pyro_counter+1) % 3
-        which_hit = hits[((i-1) % 6)]
-        if which_hit in pyro_list:
-            pyro_flag = True
-        sequence_default.append({'name': which_hit, 'bond': bond_dft, 'flag': pyro_flag})
-        sequence_crimson.append({'name': which_hit, 'bond': bond_crm, 'flag': pyro_flag})
-        sequence_default1.append({'name': which_hit, 'bond': bond_dft1, 'flag': pyro_flag})
-        sequence_crimson1.append({'name': which_hit, 'bond': bond_crm1, 'flag': pyro_flag})
-        bond_dft = bond_dft * (100-decay_rate) * 0.01
-        bond_crm = bond_crm * (100-decay_rate) * 0.01
-        if which_hit in c1_list:
-            bond_dft1 = bond_dft1 + 5
-            bond_crm1 = bond_crm1 + 5
-        else:
-            bond_dft1 = bond_dft1* (100-decay_rate) * 0.01
-            bond_crm1 = bond_crm1 * (100-decay_rate) * 0.01
-
+    for ac in actions:
+        if ac == 'e':
+            decree_flag = True
+            seq.append({'name': ac, 'bond': bond_dft, 'bond-crm': bond_crm, 'pyro': True})
+        elif ac in ['q0', 'q1']: 
+            seq.append({'name': ac, 'bond': bond_dft, 'bond-crm': bond_crm, 'pyro': True})
+            bond_dft, bond_crm = 0, 0
+            if ac == 'q0' and decree_flag:
+                bond_dft += decree_clear_instant
+                bond_crm += decree_clear_instant
+            elif ac == 'q1' and decree_flag:
+                bond_dft += decree_clear_wait
+                bond_crm += decree_clear_wait
+            decree_flag = False
+        elif ac in ['z0', 'z1']:
+            seq.append({'name': ac, 'bond': bond_dft, 'bond-crm': bond_crm, 'pyro': True})
+            if ac == 'z0' and decree_flag:
+                bond_dft += decree_clear_instant
+                bond_crm += decree_clear_instant
+            elif ac == 'z1' and decree_flag:
+                bond_dft += decree_clear_wait
+                bond_crm += decree_clear_wait
+            if crimson_flag:
+                bond_crm += crimson_moon
+                crimson_flag = False
+            decree_flag = False
+        elif ac == 'a4':
+            for normal in hits[0:5]:
+                pyro_infusion = True if normal in pyro_list else False
+                seq.append({'name': normal, 'bond': bond_dft, 'bond-crm': bond_crm, 'pyro': pyro_infusion})
+                bond_dft = bond_dft * (1-0.01*decay_rate)
+                bond_crm = bond_crm * (1-0.01*decay_rate)
+        elif ac == 'a6':
+            for normal in hits[0:7]:
+                pyro_infusion = True if normal in pyro_list else False
+                seq.append({'name': normal, 'bond': bond_dft, 'bond-crm': bond_crm, 'pyro': pyro_infusion})
+                bond_dft = bond_dft * (1-0.01*decay_rate)
+                bond_crm = bond_crm * (1-0.01*decay_rate)
+        
     if print_sequence:
-        print('bond axis with 24 atks: ')
-        print('\ndefault: ')
-        for i, action in enumerate(sequence_default):
-            which_hit = (i % 6) + 1
-            print('{}{}: bond={:.1f}'.format(action['name'], '(pyro)' if action['flag'] else '', action['bond']))
-        print('\ncrimson: ')
-        for i, action in enumerate(sequence_crimson):
-            which_hit = (i % 6) + 1
-            print('{}{}: bond={:.1f}'.format(action['name'], '(pyro)' if action['flag'] else '', action['bond']))
-        print('\ndefault-c1: ')
-        for i, action in enumerate(sequence_default1):
-            which_hit = (i % 6) + 1
-            print('{}{}: bond={:.1f}'.format(action['name'], '(pyro)' if action['flag'] else '', action['bond']))
-        print('\ncrimson-c1: ')
-        for i, action in enumerate(sequence_crimson1):
-            which_hit = (i % 6) + 1
-            print('{}{}: bond={:.1f}'.format(action['name'], '(pyro)' if action['flag'] else '', action['bond']))
-        print('')
-
-    return {'default': sequence_default, 'crimson': sequence_crimson, 'default-c1': sequence_default1, 'crimson-c1': sequence_crimson1}
+        print('\n--- arlecchino bond axis ---')
+        for item in seq:
+            print('{}{}: bond = {:.1f}/{:.1f}'.format(item['name'], '(pyro)' if item['pyro'] else '', item['bond'], item['bond-crm']))
+    
+    return seq
 
 
-class ArlecchinoV0(CharacterBase):
+class ArlecchinoV3(CharacterBase):
 
-    bond_sequence = {
-        'default': [],
-        'crimson': [],
-        'default-c1': [],
-        'crimson-c1': [],
-    }
+    bond_sequence = []
 
-    def __init__(self, constellation=0, weapon='crimson', virtual_artefact='whimsy', understanding='mult'):
-        self.name = 'Arlecchino'
+    axis_maxima = 'e-q1-e-z0-a4-a4-a4-a4'
+    axis_extend = 'e-q1-e-a4-a4-z1-a4-a4'
+
+    def __init__(self, constellation=0, weapon='crimson', virtual_artefact='whimsy'):
+        self.name = 'Arlecchino(v3)'
+        self.attrs = CharacterAttrs()
+        self.artifacts = ArtifactCollection([])
         self.cons = constellation
-        self.understanding = understanding
         self.weapon = weapon
         self.vartefact = virtual_artefact
         arlecchino_base = {
@@ -111,7 +102,7 @@ class ArlecchinoV0(CharacterBase):
             'pyro': 0,
             'praise-shadow': 40, # arlecchino normal
         }
-        self.attrs = self.construct_attrs(arlecchino_base)
+        self.construct_attrs(arlecchino_base)
         self.normal_interval = 0.55 # 3.3s for 6 hits
         self.mult = {
             'a1': 93.2, # normal
@@ -133,16 +124,7 @@ class ArlecchinoV0(CharacterBase):
         }
         self.recharge_thres = 100 # pending test
         self.reaction = 'none'
-        self.sequence = self.bond_sequence['default']
-        if self.cons > 0 and self.weapon == 'crimson':
-            self.sequence = self.bond_sequence['crimson-c1']
-        elif self.cons > 0:
-            self.sequence = self.bond_sequence['default-c1']
-        elif self.weapon == 'crimson':
-            self.sequence = self.bond_sequence['crimson']
-        self.artifacts = ArtifactCollection([])
         self.apply_weapon()
-        # self.apply_team()
 
     def apply_weapon(self):
         if self.weapon == 'crimson':
@@ -155,14 +137,14 @@ class ArlecchinoV0(CharacterBase):
             self.apply_ballad_fjord()
 
     def apply_crimson(self):
-        self.apply_modifier('atk0', 674)
-        self.apply_modifier('cr', 22.1)
-        self.apply_modifier('bns', 12)
-        self.apply_modifier('praise-shadow', 20)
+        self.apply_modifier('atk0', 674, name='crimson-moon')
+        self.apply_modifier('cr', 22.1, name='crimson-moon')
+        self.apply_modifier('bns', 12, name='crimson-moon')
+        self.apply_modifier('praise-shadow', 20, name='crimson-moon')
 
     def apply_scarlet_sand(self):
-        self.apply_modifier('atk0', 542)
-        self.apply_modifier('cr', 44.1)
+        self.apply_modifier('atk0', 542, name='scarlet-sand')
+        self.apply_modifier('cr', 44.1, name='scarlet-sand')
 
     def sand_atk(self, t, team):
         if self.weapon == 'sand':
@@ -289,23 +271,22 @@ class ArlecchinoV0(CharacterBase):
         self.apply_team(team)
 
         normal_cumulative = Composite()
-        if self.understanding == 'mult':
-            for t, action in enumerate(self.sequence):
-                global_t = 10 + t*self.normal_interval
-                action_result = calc_damage(
+        for t, action in enumerate(self.sequence):
+            global_t = 10 + t*self.normal_interval
+            action_result = calc_damage(
+                self.mult[action['name']] + self.bond_mult(action['bond']) + self.echo_mult(),
+                self.atk()+self.sand_atk(global_t, team), self.cr(), self.cd(), self.bns(['pyro','normal','praise-shadow'])+self.yelan_bonus(global_t, team),
+                self.res(), reaction={self.reaction: self.em()+self.instructor_em(global_t, team)+self.sucrose_em(global_t, team)} if action['flag'] else {}
+            )
+            if action['name'] == 'a4':
+                # this hit of a4 is definitely not one with elemental infusion
+                extra_result = calc_damage(
                     self.mult[action['name']] + self.bond_mult(action['bond']) + self.echo_mult(),
                     self.atk()+self.sand_atk(global_t, team), self.cr(), self.cd(), self.bns(['pyro','normal','praise-shadow'])+self.yelan_bonus(global_t, team),
-                    self.res(), reaction={self.reaction: self.em()+self.instructor_em(global_t, team)+self.sucrose_em(global_t, team)} if action['flag'] else {}
+                    self.res(), reaction={}
                 )
-                if action['name'] == 'a4':
-                    # this hit of a4 is definitely not one with elemental infusion
-                    extra_result = calc_damage(
-                        self.mult[action['name']] + self.bond_mult(action['bond']) + self.echo_mult(),
-                        self.atk()+self.sand_atk(global_t, team), self.cr(), self.cd(), self.bns(['pyro','normal','praise-shadow'])+self.yelan_bonus(global_t, team),
-                        self.res(), reaction={}
-                    )
-                    action_result = action_result + extra_result
-                normal_cumulative = normal_cumulative + action_result
+                action_result = action_result + extra_result
+            normal_cumulative = normal_cumulative + action_result
         
         wing_dance = calc_damage(
             self.mult['dance'],
@@ -343,27 +324,28 @@ class ArlecchinoV0(CharacterBase):
         self.apply_team(team)
 
         normal_list = {}
-        if self.understanding == 'mult':
-            for t, action in enumerate(self.sequence):
-                global_t = 10 + t*self.normal_interval
-                action_result = calc_damage(
+        for t, action in enumerate(self.sequence):
+            global_t = 10 + t*self.normal_interval
+            action_result = calc_damage(
+                self.mult[action['name']] + self.bond_mult(action['bond']) + self.echo_mult(),
+                self.atk()+self.sand_atk(global_t, team), self.cr(), self.cd(), self.bns(['pyro','normal','praise-shadow'])+self.yelan_bonus(global_t, team),
+                self.res(), reaction={self.reaction: self.em()+self.instructor_em(global_t, team)+self.sucrose_em(global_t, team)} if action['flag'] else {}
+            )
+            normal_list['{}-{}'.format(t, action['name'])] = action_result
+            if action['name'] == 'a4':
+                # this hit of a4 is definitely not one with elemental infusion
+                extra_result = calc_damage(
                     self.mult[action['name']] + self.bond_mult(action['bond']) + self.echo_mult(),
                     self.atk()+self.sand_atk(global_t, team), self.cr(), self.cd(), self.bns(['pyro','normal','praise-shadow'])+self.yelan_bonus(global_t, team),
-                    self.res(), reaction={self.reaction: self.em()+self.instructor_em(global_t, team)+self.sucrose_em(global_t, team)} if action['flag'] else {}
+                    self.res(), reaction={}
                 )
-                normal_list['{}-{}'.format(t, action['name'])] = action_result
-                if action['name'] == 'a4':
-                    # this hit of a4 is definitely not one with elemental infusion
-                    extra_result = calc_damage(
-                        self.mult[action['name']] + self.bond_mult(action['bond']) + self.echo_mult(),
-                        self.atk()+self.sand_atk(global_t, team), self.cr(), self.cd(), self.bns(['pyro','normal','praise-shadow'])+self.yelan_bonus(global_t, team),
-                        self.res(), reaction={}
-                    )
-                    normal_list['{}-a4-2'.format(t)] = extra_result
+                normal_list['{}-a4-2'.format(t)] = extra_result
 
         self.reset_team()
         
         return normal_list
     
-    
+
+if __name__ == '__main__':
+    bond_simulation()
 

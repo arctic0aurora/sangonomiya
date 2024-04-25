@@ -151,9 +151,7 @@ class Furina(CharacterBase):
         self.apply_modifier('atk0', 542, name='primodial-jade')
         self.apply_modifier('cr', 44.1, name='primodial-jade')
         self.apply_modifier('H', 20, name='primodial-jade')
-    
-    def jade_atk(self):
-        return (0.012 * self.get('hp'))
+        self.apply_conversion_modifier('a', 'hp', 1.2, name='primodial-jade')
 
     def apply_favonius(self):
         self.apply_modifier('atk0', 454, name='favonius')

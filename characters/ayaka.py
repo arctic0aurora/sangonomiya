@@ -83,13 +83,18 @@ class Ayaka(CharacterBase):
     def apply_team(self, team):
         if self.in_team(team, ors=['shenhe', 'ganyu', 'layla']):
             self.apply_cryo_resonation()
-        if self.in_team(team, 'kazuha'):
+        if self.in_team(team, ors=['kazuha', 'lynette', 'venti', 'sucrose']):
+            self.apply_modifier('res', -40, name='viridescent4')
+        if self.in_team(team, ors=['kazuha', 'lynette']):
             self.apply_modifier('A', 20, name='freedom-sworn')
             self.apply_modifier('normal', 16, name='freedom-sworn')
             self.apply_modifier('charged', 16, name='freedom-sworn')
             self.apply_modifier('plunge', 16, name='freedom-sworn')
-            self.apply_modifier('res', -40, name='viridescent4')
+        if self.in_team(team, 'kazuha'):
             self.apply_modifier('cryo', 42, name='kazuha-talent2')
+        if self.in_team(team, 'venti'):
+            self.apply_modifier('A', 20, name='elegy-for-the-end')
+            self.apply_modifier('em', 100, name='elegy-for-the-end')
         if self.in_team(team, 'kokomi'):
             self.apply_modifier('A', 48, name='thrilling-tales')
             self.apply_modifier('A', 20, name='millelith4')

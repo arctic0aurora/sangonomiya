@@ -68,12 +68,15 @@ class CharacterBase():
         self.attrs.construct_list(simple_attrs)
     
     # get wrapper
-    def get(self, attr, secondary_attrs=[], t=-1):
-        return self.attrs.get_attr_wrapper(attr, secondary_attrs, t)
+    def get(self, attr, secondary_attrs=[], conversion=False, t=-1):
+        return self.attrs.get_attr_wrapper(attr, secondary_attrs, conversion, t)
     
     # append wrapper
     def apply_modifier(self, attr, value, t0=0, t1=65535, name=''):
         self.attrs.append_modifier(attr, value, t0, t1, name)
+    
+    def apply_conversion_modifier(self, attr, from_attr, rate, t0=0, t1=65535, name=''):
+        self.attrs.append_conversion(attr, from_attr, rate, t0, t1, name)
     
     # artifact management
     def apply_artifacts(self, artifacts):
