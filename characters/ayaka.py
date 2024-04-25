@@ -92,6 +92,8 @@ class Ayaka(CharacterBase):
             self.apply_modifier('plunge', 16, name='freedom-sworn')
         if self.in_team(team, 'kazuha'):
             self.apply_modifier('cryo', 42, name='kazuha-talent2')
+        if self.in_team(team, 'lynette'):
+            self.apply_modifier('A', 16, name='lynette-talent1')
         if self.in_team(team, 'venti'):
             self.apply_modifier('A', 20, name='elegy-for-the-end')
             self.apply_modifier('em', 100, name='elegy-for-the-end')
@@ -173,7 +175,7 @@ class Ayaka(CharacterBase):
         self.apply_team(team)
 
         # soumetsu
-        soumetsu_cut, soumetsu_cut_quill = {}, {}
+        soumetsu_cut, soumetsu_cut_quill, soumetsu_bloom = {}, {}, {}
         for cond in self.cryo_cr:
             soumetsu_cut[cond] = calc_damage(
                 self.mult['soumetsu-cut'],
@@ -185,6 +187,11 @@ class Ayaka(CharacterBase):
                 self.get('atk'), self.get('cr', self.cryo_cr[cond]), self.get('cd'), self.get('bns', ['cryo','burst']),
                 self.get('res'), self.get('rdf'),
                 quill = self.get('quill')
+            )
+            soumetsu_bloom[cond] = calc_damage(
+                self.mult['soumetsu-bloom'],
+                self.get('atk'), self.get('cr', self.cryo_cr[cond]), self.get('cd'), self.get('bns', ['cryo','burst']),
+                self.get('res'), self.get('rdf')
             )
         
         # hyouka
@@ -216,10 +223,28 @@ class Ayaka(CharacterBase):
                 self.get('res'), self.get('rdf'),
                 quill = self.get('quill')
             )
+        
+        # normal attacks
+        normal1, charged = {}, {}
+        for cond in self.cryo_cr:
+            normal1[cond] = calc_damage(
+                self.mult['a1'],
+                self.get('atk'), self.get('cr', self.cryo_cr[cond]), self.get('cd'), self.get('bns', ['cryo','normal']),
+                self.get('res'), self.get('rdf')
+            )
+            charged[cond] = calc_damage(
+                self.mult['charged'],
+                self.get('atk'), self.get('cr', self.cryo_cr[cond]), self.get('cd'), self.get('bns', ['cryo','charged']),
+                self.get('res'), self.get('rdf')
+            )
+        
+        estimated_rotation = soumetsu_cut_quill['frozen']*10 + soumetsu_cut['frozen']*9 + soumetsu_bloom['frozen']
+        estimated_rotation = estimated_rotation + hyouka['frozen']*2 + normal1['frozen']*3 + c6_charged['frozen']*6 + charged['frozen']*3
 
         self.reset_team()
 
         return {
+            'rotation': estimated_rotation,
             'soumetsu quill': soumetsu_cut_quill['frozen'], 
             'soumetsu cut': soumetsu_cut['frozen'],
             'soumetsu alone': soumetsu_cut_alone['cryo'],
@@ -229,6 +254,7 @@ class Ayaka(CharacterBase):
             'c6 charged quill': c6_charged_quill['frozen'],
             'c6 charged': c6_charged['frozen'],
             'c6 charged alone': c6_charged_alone['cryo'],
+            'charged': charged['frozen']
             }
     
     
