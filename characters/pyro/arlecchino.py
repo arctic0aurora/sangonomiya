@@ -7,6 +7,8 @@ from optim import *
 
 import numpy as np
 
+# arlecchino for beta v3, need update
+
 # generate bond of life axis in a rotation
 def bond_simulation(axis='e-q1-e-z0-a4-a4-a4-a4', vapor_rate=1.0, print_sequence=True):
     # assumption: bond is counted after attack
@@ -276,7 +278,7 @@ class ArlecchinoV3(CharacterBase):
             action_result = calc_damage(
                 self.mult[action['name']] + self.bond_mult(action['bond']) + self.echo_mult(),
                 self.atk()+self.sand_atk(global_t, team), self.cr(), self.cd(), self.bns(['pyro','normal','praise-shadow'])+self.yelan_bonus(global_t, team),
-                self.res(), reaction={self.reaction: self.em()+self.instructor_em(global_t, team)+self.sucrose_em(global_t, team)} if action['flag'] else {}
+                self.res(), reaction={self.reaction: {'em': self.em()+self.instructor_em(global_t, team)+self.sucrose_em(global_t, team)}} if action['flag'] else {}
             )
             if action['name'] == 'a4':
                 # this hit of a4 is definitely not one with elemental infusion
@@ -291,7 +293,7 @@ class ArlecchinoV3(CharacterBase):
         wing_dance = calc_damage(
             self.mult['dance'],
             self.atk()+self.sand_atk(8, team), self.cr(), self.cd(), self.bns(['pyro','burst','praise-shadow'])+self.yelan_bonus(8, team), # at t=3 to t=5
-            self.res(), reaction={self.reaction: self.em()+self.instructor_em(8, team)+self.sucrose_em(8, team)}
+            self.res(), reaction={self.reaction: {'em': self.em()+self.instructor_em(8, team)+self.sucrose_em(8, team)}}
         )
 
         slash = calc_damage(
@@ -303,7 +305,7 @@ class ArlecchinoV3(CharacterBase):
         charged = calc_damage(
             self.mult['charged'],
             self.atk()+self.sand_atk(7, team), self.cr(), self.cd(), self.bns(['pyro','charged'])+self.yelan_bonus(7, team), # at t=2 to t=3
-            self.res(), reaction={self.reaction: self.em()+self.instructor_em(7, team)+self.sucrose_em(7, team)}
+            self.res(), reaction={self.reaction: {'em': self.em()+self.instructor_em(7, team)+self.sucrose_em(7, team)}}
         )
 
         feature = normal_cumulative + wing_dance + slash + charged
@@ -329,7 +331,7 @@ class ArlecchinoV3(CharacterBase):
             action_result = calc_damage(
                 self.mult[action['name']] + self.bond_mult(action['bond']) + self.echo_mult(),
                 self.atk()+self.sand_atk(global_t, team), self.cr(), self.cd(), self.bns(['pyro','normal','praise-shadow'])+self.yelan_bonus(global_t, team),
-                self.res(), reaction={self.reaction: self.em()+self.instructor_em(global_t, team)+self.sucrose_em(global_t, team)} if action['flag'] else {}
+                self.res(), reaction={self.reaction: {'em': self.em()+self.instructor_em(global_t, team)+self.sucrose_em(global_t, team)}} if action['flag'] else {}
             )
             normal_list['{}-{}'.format(t, action['name'])] = action_result
             if action['name'] == 'a4':

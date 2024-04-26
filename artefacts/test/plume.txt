@@ -1,55 +1,65 @@
 any
 a = 311
 cr = 19.8
-cd = 105.6
+cd = 118.8
 
 any
 a = 311
 cr = 23.1
-cd = 99.0
+cd = 112.2
 
 any
 a = 311
 cr = 26.4
-cd = 92.4
+cd = 105.6
 
 any
 a = 311
 cr = 29.7
-cd = 85.8
+cd = 99.0
 
 any
 a = 311
 cr = 33.0
-cd = 79.2
+cd = 92.4
 
 any
 a = 311
 cr = 36.3
-cd = 72.6
+cd = 85.8
 
 any
 a = 311
 cr = 39.6
-cd = 66.0
+cd = 79.2
 
 any
 a = 311
 cr = 42.9
-cd = 59.4
+cd = 72.6
 
 any
 a = 311
 cr = 46.2
-cd = 52.8
+cd = 66.0
 
 any
 a = 311
 cr = 49.5
-cd = 46.2
+cd = 59.4
 
 any
 a = 311
 cr = 52.8
+cd = 52.8
+
+any
+a = 311
+cr = 56.1
+cd = 46.2
+
+any
+a = 311
+cr = 59.4
 cd = 39.6
 

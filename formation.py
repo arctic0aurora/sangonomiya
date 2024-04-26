@@ -44,15 +44,15 @@ def calc_damage(mult, atk, cr, cd, bns, res, rdf=0, quill=0, reaction={}, enemy_
     amplification = 1
     intensification = 0
     if reaction:
-        for rea, em in reaction.items():
+        for rea, bonus in reaction.items():
             if rea == 'amplify':
-                amplification *= amplify.amplify(em)
+                amplification *= amplify.amplify(bonus.get('em', 0), extra=bonus.get('ex', 0))
             elif rea == 'reverse_amplify':
-                amplification *= amplify.reverse_amplify(em)
-            elif rea == 'aggrevate':
-                intensification += intensify.aggravate(em)
+                amplification *= amplify.reverse_amplify(bonus.get('em', 0), extra=bonus.get('ex', 0))
+            elif rea == 'aggravate':
+                intensification += intensify.aggravate(bonus.get('em', 0), extra=bonus.get('ex', 0))
             elif rea == 'spread':
-                intensification += intensify.spread(em)
+                intensification += intensify.spread(bonus.get('em', 0), extra=bonus.get('ex', 0))
 
     noncrit = (mult*atk+quill+intensification) * (1+bns) * amplification * resist * defence
     crit = noncrit * (1+cd)
