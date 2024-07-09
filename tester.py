@@ -21,14 +21,22 @@ def test_arlecchino(args=None):
     optim.print_options(counts=1, print_level=0)
 
 def test_clorinde(args=None):
-    _clorinde_signature = clorinde.ClorindeV1(constellation=1, weapon='absolution', virtual_artefact='echo', name='Clorinde(Signature)')
-    _clorinde_haran = clorinde.ClorindeV1(constellation=1, weapon='haran', virtual_artefact='echo', name='Clorinde(Haran)')
-    _clorinde_foliar = clorinde.ClorindeV1(constellation=1, weapon='foliar', virtual_artefact='whimsy', name='Clorinde(Foliar)')
+    # _clorinde_signature = clorinde.ClorindeV1(constellation=0, weapon='absolution', virtual_artefact='whimsy', name='Clorinde(Signature)')
     clorinde_path = './artefacts/test'
-    _clorinde_selected = _clorinde_foliar
-    optim = Optimizer(_clorinde_selected, clorinde_path, team=['fischl', 'kazuha', 'nahida'], args=[])
-    optim.optimize_artifacts(requirement=_clorinde_selected.requirement)
-    optim.print_options(counts=1, print_level=1)
+    #_clorinde_selected = _clorinde_signature
+    # optim = Optimizer(_clorinde_selected, clorinde_path, team=['fischl', 'kazuha', 'nahida'], args=[])
+    # optim = Optimizer(_clorinde_selected, clorinde_path, team=['furina', 'baizhu', 'nahida', 'dendro'], args=[])
+    # optim.optimize_artifacts(requirement=_clorinde_selected.requirement)
+    # optim.print_options(counts=1, print_level=0)
+    clorinde_wpns = ['absolution', 'haran', 'haran-r2', 'mistsplitter', 'foliar', 'black']
+    clorinde_cons = [0,1]
+    for cons in clorinde_cons:
+        for wpn in clorinde_wpns:
+            _clorinde = clorinde.ClorindeV2(constellation=cons, weapon=wpn, virtual_artefact='whimsy', name='Clorinde({}, {})'.format(wpn, cons))
+            optim = Optimizer(_clorinde, clorinde_path, team=['fischl', 'kazuha', 'nahida'], args=[])
+            optim.optimize_artifacts(requirement=_clorinde.requirement)
+            optim.print_options(counts=1, print_level=0)
+
 
 if __name__ == '__main__':
     # test_arlecchino()

@@ -103,7 +103,7 @@ class Furina(CharacterBase):
             'set-type': '4pcs',
             'set-restriction': ['goldentroupe'],
         }
-        self.recharge_thres = 155 # randomly set in favor of recharge hourglass
+        self.recharge_thres = 160 # randomly set in favor of recharge hourglass
         self.apply_weapon()
 
     # furina talent2
@@ -114,7 +114,8 @@ class Furina(CharacterBase):
     
     # fanfare to buff
     def fanfare_bonus(self, fanfare):
-        return 0.25 * min(fanfare, 400)
+        # return 0.25 * min(fanfare, 400)
+        return 0.31 * min(fanfare, 400) # furina c3
     
     def fanfare_hp_percent(self, fanfare):
         return max(0, 0.35 * (min(fanfare, 800) - 400))
@@ -179,16 +180,19 @@ class Furina(CharacterBase):
         self.apply_artifacts(self.artifacts)
 
     def apply_team(self, team=[]):
-        if self.in_team(team, ors=['kokomi', 'yelan', 'xingqiu', 'ayato']):
+        if self.in_team(team, ors=['kokomi', 'yelan', 'xingqiu', 'ayato', 'sigewinne']):
             self.apply_hydro_resonation()
-        if self.in_team(team, 'kazuha'):
+        if self.in_team(team, ors=['kazuha', 'lynette', 'jean', 'xianyun']):          
+            self.apply_modifier('res', -40, name='viridescent4')
+        if self.in_team(team, 'kazuha'):      
+            self.apply_modifier('hydro', 42, name='kazuha-talent2')
+        if self.in_team(team, 'lynette'):      
+            self.apply_modifier('A', 12, name='lynette-talent1')
+        if self.in_team(team, ors=['kazuha', 'lynette']):
             self.apply_modifier('A', 20, name='freedom-sworn')
             self.apply_modifier('normal', 16, name='freedom-sworn')
             self.apply_modifier('charged', 16, name='freedom-sworn')
-            self.apply_modifier('plunge', 16, name='freedom-sworn')       
-            self.apply_modifier('hydro', 42, name='kazuha-talent2')
-        if self.in_team(team, ors=['kazuha', 'lynette', 'jean', 'xianyun']):          
-            self.apply_modifier('res', -40, name='viridescent4')
+            self.apply_modifier('plunge', 16, name='freedom-sworn')
         if self.in_team(team, 'yelan'):
             # self.apply_modifier('bns', 28, name='yelan-talent2')
             self.apply_modifier('bns', 0, name='yelan-talent2') # no buff for off-field
@@ -276,6 +280,17 @@ class Furina(CharacterBase):
                 self.get('res')
             )
             salon_cumulative = salon_cumulative + action_result
+
+        sigewinne_cumulative = Composite()
+        if self.in_team(team, 'sigewinne'):
+            sigewinne_cumulative = calc_damage(
+                0,
+                self.get('hp'), self.get('cr'), self.get('cd'), self.get('bns', ['hydro','skill'])+self.fanfare_bonus(800)+self.confession_bonus(800),
+                self.get('res'),
+                quill=10*2800
+            )
+        
+        salon_cumulative = salon_cumulative + sigewinne_cumulative
         
         self.reset_team()
 

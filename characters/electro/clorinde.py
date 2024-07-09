@@ -8,7 +8,7 @@ from optim import *
 import numpy as np
 
 
-class ClorindeV1(CharacterBase):
+class ClorindeV2(CharacterBase):
 
     def __init__(self, constellation=0, weapon='absolution', virtual_artefact='whimsy', name='Clorinde(V1)'):
         self.name = name
@@ -30,9 +30,9 @@ class ClorindeV1(CharacterBase):
         }
         self.construct_attrs(clorinde_base)
         self.mult = {
-            'hunt': 52.9 + 51, # e normal
-            'hunt-pierce': 66.1 + 51, # e normal +
-            'impale-night': 36.2, # e + (*3)
+            'hunt': 52.9 + 60, # e normal
+            'hunt-pierce': 76.7 + 60, # e normal +
+            'impale-night': 46.2, # e + (*3)
             'last-lightfall': 228.4, # q (*5)
             'nightwatch': 30, # c1
         }
@@ -50,16 +50,20 @@ class ClorindeV1(CharacterBase):
         elif self.weapon == 'mistsplitter':
             self.apply_mistsplitter()
         elif self.weapon == 'haran':
-            self.apply_haran()
+            self.apply_haran(refinement=1)
+        elif self.weapon == 'haran-r2':
+            self.apply_haran(refinement=2)
         elif self.weapon == 'foliar':
             self.apply_foliar()
         elif self.weapon == 'jade':
             self.apply_primodial_jade()
+        elif self.weapon == 'black':
+            self.apply_black_sword()
     
     def apply_absolution(self):
         self.apply_modifier('atk0', 674, name='absolution')
         self.apply_modifier('cd', 64.1, name='absolution')
-        self.apply_modifier('bns', 36, name='absolution')
+        self.apply_modifier('bns', 48, name='absolution')
     
     def apply_mistsplitter(self):
         self.apply_modifier('atk0', 674, name='mistsplitter')
@@ -83,6 +87,11 @@ class ClorindeV1(CharacterBase):
         self.apply_modifier('cr', 44.1, name='primodial-jade')
         self.apply_modifier('H', 20, name='primodial-jade')
         self.apply_conversion_modifier('a', 'hp', 1.2, name='primodial-jade')
+    
+    def apply_black_sword(self):
+        self.apply_modifier('atk0', 510, name='black-sword')
+        self.apply_modifier('cr', 27.6, name='black-sword')
+        self.apply_modifier('normal', 40, name='black-sword')
     
     def apply_artifacts(self, artifacts):
         super().apply_artifacts(artifacts)
@@ -125,7 +134,8 @@ class ClorindeV1(CharacterBase):
             self.apply_modifier('a', 144, name='evenstar')
             self.apply_modifier('em', 250, name='nahida-talent1') # 1000 em
         if self.in_team(team, 'kirara'):
-            self.apply_modifier('em', 135, name='khaj-nisut') # 54000 hp
+            self.apply_modifier('em', 120, name='khaj-nisut') # 48000 hp
+            self.apply_modifier('em', 120, name='instructor')
             self.apply_modifier('bns', 12, name='kirara-c6')
         if self.in_team(team, 'baizhu'):
             self.apply_modifier('em-extra', 40*0.01, name='baizhu-talent2-equal') # 40000 hp
@@ -185,12 +195,12 @@ class ClorindeV1(CharacterBase):
 
         impale_night_reac = calc_damage(
             self.mult['impale-night'],
-            self.get('atk', conversion=True), self.get('cr'), self.get('cd'), self.get('bns', ['electro','skill']),
+            self.get('atk', conversion=True), self.get('cr'), self.get('cd'), self.get('bns', ['electro','normal']),
             self.get('res'), reaction={self.reaction: {'em': self.get('em'), 'ex': self.get('em-extra')}}
         )
         impale_night_no_reac = calc_damage(
             self.mult['impale-night'],
-            self.get('atk', conversion=True), self.get('cr'), self.get('cd'), self.get('bns', ['electro','skill']),
+            self.get('atk', conversion=True), self.get('cr'), self.get('cd'), self.get('bns', ['electro','normal']),
             self.get('res'), reaction={}
         )
         impale_night = impale_night_reac + impale_night_no_reac*2
@@ -233,9 +243,9 @@ class ClorindeV1(CharacterBase):
                 self.get('em'), self.get('cr'), self.get('cd'), self.get('bns', ['electro','skill']),
                 self.get('res'), reaction={}
             )
-            foliar = foliar_normal*14 + foliar_skill*14
+            foliar = foliar_normal*28 # + foliar_skill*14
 
-        feature = last_lightfall + (impale_night + wild_hunt)*7 + nightwatch*9 + foliar
+        feature = last_lightfall + (impale_night + wild_hunt)*7 + nightwatch*8 + foliar
 
         self.reset_team()
 

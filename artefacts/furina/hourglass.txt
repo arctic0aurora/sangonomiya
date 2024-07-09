@@ -1,9 +1,9 @@
 goldentroupe
 H = 46.6
-cd = 12.4
-em = 63
-cr = 7.0
-A = 4.1
+cr = 6.6
+rcg = 10.4
+cd = 19.4
+h = 269
 
 noblesse
 rcg = 51.8

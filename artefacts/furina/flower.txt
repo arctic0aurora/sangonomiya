@@ -1,12 +1,5 @@
 blizzard
 h = 4780
-cr = 3.1
-cd = 28.8
-rcg = 10.4
-d = 42
-
-blizzard
-h = 4780
 A = 5.8
 cd = 12.4
 cr = 16.7
@@ -63,20 +56,6 @@ D = 5.1
 
 goldentroupe
 h = 4780
-d = 21
-H = 19.2
-cd = 13.2
-a = 27
-
-goldentroupe
-h = 4780
-a = 19
-cd = 18.7
-d = 16
-H = 12.8
-
-goldentroupe
-h = 4780
 cd = 19.4
 H = 8.2
 em = 37
@@ -103,6 +82,13 @@ cr = 7.4
 em = 23
 H = 14.6
 
+goldentroupe
+h = 4780
+A = 10.5
+cr = 11.3
+cd = 13.2
+em = 23
+
 emblem
 h = 4780
 cd = 6.2
@@ -116,3 +102,10 @@ H = 9.9
 d = 23
 cd = 29.5
 cr = 3.5
+
+marechaussee
+h = 4780
+em = 20.7
+cd = 7.8
+cr = 7.4
+H = 4.1

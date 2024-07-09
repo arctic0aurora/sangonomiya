@@ -19,13 +19,6 @@ cr = 10.1
 a = 299
 rcg = 6.5
 
-reminiscence
-a = 311
-d = 42
-cr = 6.6
-cd = 25.6
-rcg = 4.5
-
 pale
 a = 311
 rcg = 30.5
@@ -35,16 +28,9 @@ D = 6.6
 
 goldentroupe
 a = 311
-A = 9.9
-d = 23
-H = 9.9
-cd = 28.0
-
-goldentroupe
-a = 311
-cr = 3.1
-cd = 28.0
-d = 42
+cd = 29.5
+cr = 2.7
+A = 8.7
 H = 5.8
 
 goldentroupe
@@ -68,3 +54,9 @@ H = 4.1
 rcg = 11.7
 cr = 7.8
 
+goldentroupe
+a = 311
+cd = 13.2
+cr = 9.7
+A = 5.3
+H = 9.3
