@@ -34,7 +34,7 @@ def main(args):
         furina.Furina.fanfare_sequence = furina.fanfare_simulation()
         _furina = furina.Furina(weapon='tranquil', rejoice_weight=0.8, duckweed_weight=0.6)
         furina_path = './artefacts/furina'
-        optim = Optimizer(_furina, furina_path, team=['lynette', 'ayato', 'sigewinne'], args=['recharge_thres'])
+        optim = Optimizer(_furina, furina_path, team=['kazuha', 'ayato', 'sigewinne'], args=['recharge_thres'])
         optim.optimize_artifacts(requirement=_furina.requirement)
     elif character == 'albedo':
         _albedo = albedo.Albedo(weapon='spindle')

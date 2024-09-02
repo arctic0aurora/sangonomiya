@@ -7,59 +7,70 @@ from optim import *
 
 import numpy as np
 
-class Ayaka(CharacterBase):
-    def __init__(self, weapon='mistsplitter', cryo_weight=1, frozen_weight=0.5):
-        self.name = 'Ayaka'
+class Ayato(CharacterBase):
+    def __init__(self, weapon='haran'):
+        self.name = 'Ayato'
         self.attrs = CharacterAttrs()
         self.artifacts = ArtifactCollection([])
         self.weapon = weapon
-        self.cryo_weight = cryo_weight
-        self.frozen_weight = frozen_weight
-        self.cryo_cr = {
-            'no': [],
-            'cryo': ['cr-cryo'],
-            'frozen': ['cr-cryo', 'cr-frozen'],
-        }
-        ayaka_base = {
-            'hp0': 12858,
-            'atk0': 342,
-            'df0': 784,
+        ayato_base = {
+            'hp0': 13715,
+            'atk0': 299,
+            'df0': 769,
             'cr': 5,
             'cd': 88.4,
             'rcg': 100,
             'em': 0,
-            'cryo': 18, # ayaka talent2
-            'rdf': -40, # ayaka c4
-            'normal': 30, # ayaka talent1
-            'charged': 30, # ayaka talent1
-            'cr-cryo': 0, # additional crit rate when cryo
-            'cr-frozen': 0, # additional crit rate when frozen
+            'normal': 20, # ayato suiyuu
         }      
-        self.construct_attrs(ayaka_base)
+        self.construct_attrs(ayato_base)
         self.mult = {
-            'soumetsu-cut': 238.637,
-            'soumetsu-bloom': 357.956,
-            'hyouka': 508.3,
-            'a1': 90.387,
-            'charged': 108.97,
-        } # skill lvl 10/13/13
-        self.suigetsu_bonus = 298 # ayaka c6
+            'shunsuiken1': 104.55,
+            'shunsuiken2': 116.45,
+            'shunsuiken3': 128.35,
+            'namisen': 1.109, # per stack
+            'illusion': 200.6,
+            'suiyuu': 119.621,
+        }
         self.requirement = {
             'set-type': '4pcs',
-            'set-restriction': ['blizzard'],
+            'set-restriction': ['echo', 'depth', 'gladiator'],
         }
-        self.recharge_thres = 137 # tested with shenhe-favonius        
+        self.recharge_thres = 100 # let us first try this...        
         self.apply_weapon()
 
     def apply_weapon(self):
-        if self.weapon == 'mistsplitter':
+        if self.weapon == 'haran':
+            self.apply_haran(refinement=2)
+        elif self.weapon == 'mistsplitter':
             self.apply_mistsplitter()
-
+        elif self.weapon == 'jade':
+            self.apply_primodial_jade()
+        elif self.weapon == 'black':
+            self.apply_black_sword()
+    
+    def apply_haran(self, refinement=2):
+        self.apply_modifier('atk0', 608, name='haran')
+        self.apply_modifier('cr', 33.1, name='haran')
+        self.apply_modifier('bns', 9+3*refinement, name='haran')
+        self.apply_modifier('normal', 30+10*refinement, name='haran')
+    
     def apply_mistsplitter(self):
         self.apply_modifier('atk0', 674, name='mistsplitter')
         self.apply_modifier('cd', 44.1, name='mistsplitter')
         self.apply_modifier('bns', 12, name='mistsplitter')
-        self.apply_modifier('cryo', 28, name='mistsplitter')
+        self.apply_modifier('hydro', 28, name='mistsplitter')
+        
+    def apply_primodial_jade(self):
+        self.apply_modifier('atk0', 542, name='primodial-jade')
+        self.apply_modifier('cr', 44.1, name='primodial-jade')
+        self.apply_modifier('H', 20, name='primodial-jade')
+        self.apply_conversion_modifier('a', 'hp', 1.2, name='primodial-jade')
+    
+    def apply_black_sword(self):
+        self.apply_modifier('atk0', 510, name='black-sword')
+        self.apply_modifier('cr', 27.6, name='black-sword')
+        self.apply_modifier('normal', 40, name='black-sword')
 
     def apply_artifacts(self, artifacts):
         super().apply_artifacts(artifacts)
@@ -72,8 +83,8 @@ class Ayaka(CharacterBase):
             self.apply_modifier('rcg', 20, name='emblem2')
         self.apply_a18_artifacts()
 
-    def apply_cryo_resonation(self):
-        self.apply_modifier('cr-cryo', 15, name='cryo-resonation')
+    def apply_hydro_resonation(self):
+        self.apply_modifier('H', 25, name='hydro-resonation')
     
     def reset_team(self):
         super().reset_attrs()
@@ -256,6 +267,3 @@ class Ayaka(CharacterBase):
             'c6 charged alone': c6_charged_alone['cryo'],
             'charged': charged['frozen']
             }
-    
-    
-

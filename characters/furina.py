@@ -91,11 +91,11 @@ class Furina(CharacterBase):
         }
         self.construct_attrs(furina_base)
         self.mult = {
-            'solitaire-bubble': 14.2, # ousia e release
-            'small': 5.82, # surintendante chevalmarin
-            'medium': 10.73, # gentilhomme usher
-            'large': 14.92, # mademoiselle crabaletta
-            'rejoice': 20.5, # q release
+            'solitaire-bubble': 14.155, # ousia e release
+            'small': 5.818, # surintendante chevalmarin
+            'medium': 10.728, # gentilhomme usher
+            'large': 14.918, # mademoiselle crabaletta
+            'rejoice': 20.531, # q release
             'love-chalice': 18, # furina c6
             'love-chalice-pneuma': 25, # furina c6 pneuma
         }
@@ -103,7 +103,7 @@ class Furina(CharacterBase):
             'set-type': '4pcs',
             'set-restriction': ['goldentroupe'],
         }
-        self.recharge_thres = 160 # randomly set in favor of recharge hourglass
+        self.recharge_thres = 170 # randomly set in favor of recharge hourglass
         self.apply_weapon()
 
     # furina talent2
